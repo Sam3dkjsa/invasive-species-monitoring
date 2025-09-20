@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map Test - Invasive Plant Species Monitoring</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6">Map Loading Test</h1>
+        
+        <div class="mb-4">
+            <button onclick="testMap()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                Test Map Loading
+            </button>
+            <button onclick="clearConsole()" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 ml-2">
+                Clear Console
+            </button>
+        </div>
+        
+        <div id="console-output" class="bg-black text-green-400 p-4 rounded mb-4 h-32 overflow-y-auto font-mono text-sm"></div>
+        
+        <div id="map-status" class="hidden bg-blue-50 p-3 text-sm text-blue-700 rounded-t">
+            <i class="fas fa-info-circle mr-2"></i>
+            <span id="map-status-text">Initializing map...</span>
+        </div>
+        
+        <div id="map" style="height: 400px; width: 100%;" class="border border-gray-300 rounded"></div>
+    </div>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+            onload="log('✓ Leaflet loaded successfully')" 
+            onerror="log('✗ Failed to load Leaflet library')"></script>
+    
+    <!-- Leaflet Marker Cluster -->
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js" 
+            onload="log('✓ Leaflet MarkerCluster loaded')" 
+            onerror="log('⚠ MarkerCluster not available')"></script>
+    
+    <!-- API and Map scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/map.js"></script>
+    
+    <script>
+        function log(message) {
+            const output = document.getElementById('console-output');
+            const timestamp = new Date().toLocaleTimeString();
+            output.innerHTML += `[${timestamp}] ${message}\n`;
+            output.scrollTop = output.scrollHeight;
+            console.log(message);
+        }
+        
+        function clearConsole() {
+            document.getElementById('console-output').innerHTML = '';
+        }
+        
+        async function testMap() {
+            log('🧪 Starting map test...');
+            
+            try {
+                // Test 1: Check if Leaflet is available
+                if (typeof L === 'undefined') {
+                    log('✗ Leaflet not available');
+                    return;
+                } else {
+                    log('✓ Leaflet is available');
+                }
+                
+                // Test 2: Check map container
+                const mapContainer = document.getElementById('map');
+                if (!mapContainer) {
+                    log('✗ Map container not found');
+                    return;
+                } else {
+                    log('✓ Map container found');
+                }
+                
+                // Test 3: Load map data
+                if (typeof loadMapData === 'function') {
+                    log('🗺️ Loading map data...');
+                    await loadMapData();
+                    log('✓ Map data loading completed');
+                } else {
+                    log('✗ loadMapData function not available');
+                }
+                
+            } catch (error) {
+                log(`✗ Test failed: ${error.message}`);
+                console.error('Test error:', error);
+            }
+        }
+        
+        // Override console methods to show in our output
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        console.log = function(...args) {
+            log('📝 ' + args.join(' '));
+            originalLog.apply(console, args);
+        };
+        
+        console.error = function(...args) {
+            log('❌ ' + args.join(' '));
+            originalError.apply(console, args);
+        };
+        
+        console.warn = function(...args) {
+            log('⚠️ ' + args.join(' '));
+            originalWarn.apply(console, args);
+        };
+        
+        // Auto-test on load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                log('🚀 Page loaded, running auto-test...');
+                testMap();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+/* Custom styles for Invasive Plant Species Monitoring System */
+
+/* Additional utility classes */
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Loading animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* Toast notifications positioning */
+.toast-container {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1000;
+}
+
+/* Map container specific styles */
+#map {
+    border-radius: 0.75rem;
+}
+
+/* Chart container styles */
+canvas {
+    max-height: 400px !important;
+}
+
+/* Form focus states */
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
+/* Mobile responsive improvements */
+@media (max-width: 768px) {
+    .hero-gradient h2 {
+        font-size: 2.5rem;
+    }
+    
+    .hero-gradient p {
+        font-size: 1.125rem;
+    }
+}
+
+/* Card animation improvements */
+.card-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Status badge styles */
+.status-badge {
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Navigation improvements */
+.nav-link {
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+    transform: translateY(-1px);
+}
+
+/* Button hover effects */
+button {
+    transition: all 0.2s ease;
+}
+
+button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+/* Form validation styles */
+.error {
+    border-color: #ef4444;
+    background-color: #fef2f2;
+}
+
+.success {
+    border-color: #10b981;
+    background-color: #f0fdf4;
+}
+
+/* Loading state styles */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Species grid responsive improvements */
+@media (max-width: 640px) {
+    .species-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+    .species-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1025px) {
+    .species-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
