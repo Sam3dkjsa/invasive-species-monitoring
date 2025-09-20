@@ -26,6 +26,9 @@ function initializeApp() {
     // Show the dashboard section by default
     showSection('dashboard');
     
+    // Initialize user permissions (hide restricted features by default)
+    updateVerificationPermissions(null);
+    
     // Initialize Tailwind config
     tailwind.config = {
         theme: {
@@ -155,6 +158,20 @@ async function loadSectionData(sectionName) {
                 await loadReportFormData();
                 break;
             case 'reports-management':
+                // Check user permissions before loading reports management
+                if (!currentUser) {
+                    showError('Please log in to access reports management.');
+                    showLogin();
+                    showSection('dashboard');
+                    return;
+                }
+                
+                if (!canVerifyReports(currentUser)) {
+                    showError('Access denied. Only Researchers, Administrators, and Government Officials can access reports management.');
+                    showSection('dashboard');
+                    return;
+                }
+                
                 await loadReportsManagement();
                 break;
             case 'analytics':
@@ -218,28 +235,38 @@ async function loadRecentReports() {
         const container = document.getElementById('recent-reports');
         
         if (recentReports.data && recentReports.data.length > 0) {
-            container.innerHTML = recentReports.data.map(report => `
-                <div class="border-l-4 border-blue-500 pl-4 py-2">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="font-medium text-gray-900">Report #${report.id?.substring(0, 8) || 'Unknown'}</p>
-                            <p class="text-sm text-gray-600">${report.location_description || 'Location not specified'}</p>
-                            <p class="text-xs text-gray-500">${formatDate(report.report_date || report.created_at)}</p>
-                        </div>
-                        <div class="flex flex-col items-end space-y-1">
-                            <span class="px-2 py-1 text-xs rounded-full ${getStatusColor(report.verification_status)}">
-                                ${report.verification_status || 'Pending'}
-                            </span>
-                            ${report.verification_status === 'Pending' ? `
-                                <button onclick="showVerificationModal('${report.id}')" 
-                                        class="text-xs bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 transition-colors">
-                                    Verify
-                                </button>
-                            ` : ''}
+            container.innerHTML = recentReports.data.map(report => {
+                const canVerify = currentUser && canVerifyReports(currentUser) && report.verification_status === 'Pending';
+                
+                return `
+                    <div class="border-l-4 border-blue-500 pl-4 py-2">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="font-medium text-gray-900">Report #${report.id?.substring(0, 8) || 'Unknown'}</p>
+                                <p class="text-sm text-gray-600">${report.location_description || 'Location not specified'}</p>
+                                <p class="text-xs text-gray-500">${formatDate(report.report_date || report.created_at)}</p>
+                            </div>
+                            <div class="flex flex-col items-end space-y-1">
+                                <span class="px-2 py-1 text-xs rounded-full ${getStatusColor(report.verification_status)}">
+                                    ${report.verification_status || 'Pending'}
+                                </span>
+                                ${canVerify ? `
+                                    <button onclick="showVerificationModal('${report.id}')" 
+                                            class="text-xs bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 transition-colors">
+                                        Verify
+                                    </button>
+                                ` : ''}
+                                ${!currentUser && report.verification_status === 'Pending' ? `
+                                    <p class="text-xs text-gray-500">Login to verify</p>
+                                ` : ''}
+                                ${currentUser && !canVerifyReports(currentUser) && report.verification_status === 'Pending' ? `
+                                    <p class="text-xs text-red-500">No permission</p>
+                                ` : ''}
+                            </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         } else {
             container.innerHTML = '<p class="text-gray-500 text-center py-4">No recent reports available</p>';
         }
@@ -456,6 +483,11 @@ async function handleLogin(event) {
         // Update UI to show logged-in state
         updateLoginState(user);
         
+        // Refresh dashboard to show verification options if user has permission
+        if (currentSection === 'dashboard') {
+            await loadRecentReports();
+        }
+        
     } catch (error) {
         console.error('Login failed:', error);
         showError('Login failed. Please try again.');
@@ -466,8 +498,151 @@ async function handleLogin(event) {
 
 // Update UI for logged-in user
 function updateLoginState(user) {
-    // This would update the UI to show user info, logout button, etc.
+    // Update login button to show user info
+    const loginButton = document.querySelector('button[onclick="showLogin()"]');
+    if (loginButton) {
+        loginButton.innerHTML = `
+            <i class="fas fa-user mr-2"></i>${user.full_name}
+            <span class="text-xs block">${user.user_type}</span>
+        `;
+        loginButton.onclick = showUserMenu;
+    }
+    
+    // Show/hide verification features based on user permissions
+    updateVerificationPermissions(user);
+    
     console.log('User logged in:', user);
+}
+
+// Check if user has verification permissions
+function canVerifyReports(user) {
+    if (!user) return false;
+    
+    const allowedTypes = ['Researcher', 'Administrator', 'Government Official'];
+    return allowedTypes.includes(user.user_type);
+}
+
+// Update verification permissions throughout the UI
+function updateVerificationPermissions(user) {
+    const hasPermission = canVerifyReports(user);
+    
+    // Update dashboard verify buttons
+    const verifyButtons = document.querySelectorAll('button[onclick^="showVerificationModal"]');
+    verifyButtons.forEach(button => {
+        if (hasPermission) {
+            button.style.display = 'inline-block';
+            button.disabled = false;
+        } else {
+            button.style.display = 'none';
+        }
+    });
+    
+    // Update reports management access in main navigation
+    const reportsManagementLinks = document.querySelectorAll('a[data-section="reports-management"]');
+    reportsManagementLinks.forEach(link => {
+        if (hasPermission) {
+            link.style.display = 'block';
+            // For inline navigation links, use inline-flex
+            if (link.closest('.hidden.md\\:flex')) {
+                link.style.display = 'inline-flex';
+            }
+        } else {
+            link.style.display = 'none';
+        }
+    });
+    
+    // Update "View All Reports" button on dashboard
+    const viewAllReportsButton = document.querySelector('button[onclick="showSection(\'reports-management\')"]');
+    if (viewAllReportsButton) {
+        if (hasPermission) {
+            viewAllReportsButton.style.display = 'block';
+        } else {
+            viewAllReportsButton.style.display = 'none';
+        }
+    }
+    
+    // Update reports table action buttons
+    const reportActionButtons = document.querySelectorAll('button[onclick^="showVerificationModal"]');
+    reportActionButtons.forEach(button => {
+        if (hasPermission) {
+            button.style.display = 'inline-block';
+            button.disabled = false;
+        } else {
+            button.style.display = 'none';
+        }
+    });
+}
+
+// Show user menu (logout option)
+function showUserMenu() {
+    const menu = document.createElement('div');
+    menu.className = 'absolute right-0 top-full mt-2 bg-white border rounded-lg shadow-lg z-50 min-w-48';
+    menu.innerHTML = `
+        <div class="p-3 border-b">
+            <p class="font-semibold">${currentUser?.full_name || 'User'}</p>
+            <p class="text-sm text-gray-600">${currentUser?.user_type || 'Unknown'}</p>
+            <p class="text-xs text-gray-500">${currentUser?.email || ''}</p>
+        </div>
+        <div class="p-2">
+            ${canVerifyReports(currentUser) ? `
+                <div class="px-3 py-1 text-sm text-green-600">
+                    <i class="fas fa-check-circle mr-2"></i>Verification Enabled
+                </div>
+            ` : `
+                <div class="px-3 py-1 text-sm text-gray-500">
+                    <i class="fas fa-lock mr-2"></i>No Verification Access
+                </div>
+            `}
+            <button onclick="logout()" class="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 rounded">
+                <i class="fas fa-sign-out-alt mr-2"></i>Logout
+            </button>
+        </div>
+    `;
+    
+    // Position menu relative to login button
+    const loginButton = document.querySelector('button[onclick="showUserMenu"]');
+    if (loginButton) {
+        loginButton.parentElement.style.position = 'relative';
+        loginButton.parentElement.appendChild(menu);
+        
+        // Close menu when clicking outside
+        setTimeout(() => {
+            document.addEventListener('click', function closeMenu(e) {
+                if (!menu.contains(e.target) && e.target !== loginButton) {
+                    menu.remove();
+                    document.removeEventListener('click', closeMenu);
+                }
+            });
+        }, 100);
+    }
+}
+
+// Logout function
+function logout() {
+    currentUser = null;
+    invasiveSpeciesAPI.logout();
+    
+    // Reset login button
+    const loginButton = document.querySelector('button[onclick="showUserMenu"]');
+    if (loginButton) {
+        loginButton.innerHTML = '<i class="fas fa-user mr-2"></i>Login';
+        loginButton.onclick = showLogin;
+    }
+    
+    // Hide verification features
+    updateVerificationPermissions(null);
+    
+    // Refresh current section
+    if (currentSection === 'dashboard') {
+        loadRecentReports();
+    } else if (currentSection === 'reports-management') {
+        showSection('dashboard'); // Redirect to dashboard if on restricted section
+    }
+    
+    // Remove any open menus
+    document.querySelectorAll('.absolute.right-0.top-full').forEach(menu => menu.remove());
+    
+    showSuccess('Logged out successfully');
 }
 
 // Get current location
@@ -582,6 +757,18 @@ function debounce(func, wait) {
 
 // Report Verification Functions
 function showVerificationModal(reportId) {
+    // Check if user is logged in and has permission
+    if (!currentUser) {
+        showError('Please log in to verify reports.');
+        showLogin();
+        return;
+    }
+    
+    if (!canVerifyReports(currentUser)) {
+        showError('You do not have permission to verify reports. Only Researchers, Administrators, and Government Officials can verify reports.');
+        return;
+    }
+    
     // First get the report details
     invasiveSpeciesAPI.getReportById(reportId).then(reportData => {
         const report = reportData.data || reportData;
@@ -598,6 +785,15 @@ function showVerificationModal(reportId) {
                     <button onclick="closeVerificationModal()" class="text-gray-500 hover:text-gray-700">
                         <i class="fas fa-times text-xl"></i>
                     </button>
+                </div>
+                
+                <!-- Verifier Info Display -->
+                <div class="px-6 py-3 bg-green-50 border-b">
+                    <div class="flex items-center text-sm">
+                        <i class="fas fa-user-check mr-2 text-green-600"></i>
+                        <span class="font-semibold">Verifying as:</span>
+                        <span class="ml-2">${currentUser.full_name} (${currentUser.user_type})</span>
+                    </div>
                 </div>
                 
                 <div class="p-6">
@@ -699,8 +895,8 @@ function showVerificationModal(reportId) {
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-1">Verifier Name *</label>
                                             <input type="text" id="verifier-name" required 
-                                                   placeholder="Enter your name" 
-                                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                                   value="${currentUser.full_name}" readonly
+                                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50">
                                         </div>
                                         
                                         <div>
