@@ -154,6 +154,9 @@ async function loadSectionData(sectionName) {
             case 'report':
                 await loadReportFormData();
                 break;
+            case 'reports-management':
+                await loadReportsManagement();
+                break;
             case 'analytics':
                 if (typeof loadAnalyticsData === 'function') {
                     await loadAnalyticsData();
@@ -223,9 +226,17 @@ async function loadRecentReports() {
                             <p class="text-sm text-gray-600">${report.location_description || 'Location not specified'}</p>
                             <p class="text-xs text-gray-500">${formatDate(report.report_date || report.created_at)}</p>
                         </div>
-                        <span class="px-2 py-1 text-xs rounded-full ${getStatusColor(report.verification_status)}">
-                            ${report.verification_status || 'Pending'}
-                        </span>
+                        <div class="flex flex-col items-end space-y-1">
+                            <span class="px-2 py-1 text-xs rounded-full ${getStatusColor(report.verification_status)}">
+                                ${report.verification_status || 'Pending'}
+                            </span>
+                            ${report.verification_status === 'Pending' ? `
+                                <button onclick="showVerificationModal('${report.id}')" 
+                                        class="text-xs bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 transition-colors">
+                                    Verify
+                                </button>
+                            ` : ''}
+                        </div>
                     </div>
                 </div>
             `).join('');
@@ -567,4 +578,511 @@ function debounce(func, wait) {
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
     };
+}
+
+// Report Verification Functions
+function showVerificationModal(reportId) {
+    // First get the report details
+    invasiveSpeciesAPI.getReportById(reportId).then(reportData => {
+        const report = reportData.data || reportData;
+        
+        const modal = document.createElement('div');
+        modal.id = 'verification-modal';
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+        modal.innerHTML = `
+            <div class="bg-white rounded-xl max-w-4xl w-full max-h-full overflow-auto">
+                <div class="p-6 border-b flex justify-between items-center">
+                    <h3 class="text-xl font-semibold text-gray-900">
+                        <i class="fas fa-search mr-2 text-blue-600"></i>Verify Report #${reportId.substring(0, 8)}
+                    </h3>
+                    <button onclick="closeVerificationModal()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <div class="p-6">
+                    <!-- Report Details -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Left Column - Report Information -->
+                        <div class="space-y-4">
+                            <h4 class="font-semibold text-gray-900 mb-3">Report Information</h4>
+                            
+                            <div class="bg-gray-50 p-4 rounded-lg space-y-3">
+                                <div><strong>Species:</strong> ${report.species_name || 'Unknown'}</div>
+                                <div><strong>Reporter:</strong> ${report.reporter_name || 'Anonymous'}</div>
+                                <div><strong>Email:</strong> ${report.reporter_email || 'Not provided'}</div>
+                                <div><strong>Reporter Type:</strong> ${report.reporter_type || 'Unknown'}</div>
+                                <div><strong>Confidence Level:</strong> ${report.confidence_level || 'Unknown'}</div>
+                                <div><strong>Population Size:</strong> ${report.population_size || 'Unknown'}</div>
+                                <div><strong>Threat Assessment:</strong> ${report.threat_assessment || 'Unknown'}</div>
+                            </div>
+                            
+                            <div class="bg-gray-50 p-4 rounded-lg space-y-3">
+                                <div><strong>Location:</strong> ${report.location_description || 'Not specified'}</div>
+                                <div><strong>Coordinates:</strong> ${report.latitude || 'N/A'}, ${report.longitude || 'N/A'}</div>
+                                <div><strong>Habitat:</strong> ${report.habitat_description || 'Not described'}</div>
+                                <div><strong>Report Date:</strong> ${formatDate(report.report_date || report.created_at)}</div>
+                            </div>
+                            
+                            ${report.notes ? `
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <strong>Additional Notes:</strong><br>
+                                    ${report.notes}
+                                </div>
+                            ` : ''}
+                        </div>
+                        
+                        <!-- Right Column - NASA Data & Verification Tools -->
+                        <div class="space-y-4">
+                            <h4 class="font-semibold text-gray-900 mb-3">Verification Tools</h4>
+                            
+                            <!-- NASA Satellite Data -->
+                            ${report.nasa_data ? `
+                                <div class="bg-blue-50 p-4 rounded-lg">
+                                    <h5 class="font-semibold text-blue-900 mb-2">
+                                        <i class="fas fa-satellite mr-2"></i>NASA Satellite Data
+                                    </h5>
+                                    <div class="space-y-2 text-sm">
+                                        <div>✓ Earth imagery available</div>
+                                        <div>✓ Environmental monitoring active</div>
+                                        ${report.satellite_confirmed ? '<div class="text-green-600">✓ Satellite confirmed</div>' : ''}
+                                        ${report.nasa_data.earth_imagery?.url ? `
+                                            <button onclick="viewNasaImagery('${report.nasa_data.earth_imagery.url}')" 
+                                                    class="mt-2 bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700">
+                                                View NASA Imagery
+                                            </button>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            ` : `
+                                <div class="bg-yellow-50 p-4 rounded-lg">
+                                    <h5 class="font-semibold text-yellow-900 mb-2">
+                                        <i class="fas fa-exclamation-triangle mr-2"></i>Limited Satellite Data
+                                    </h5>
+                                    <div class="text-sm text-yellow-800">
+                                        NASA satellite verification not available for this location/date.
+                                    </div>
+                                </div>
+                            `}
+                            
+                            <!-- Location Map -->
+                            ${report.latitude && report.longitude ? `
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <h5 class="font-semibold text-gray-900 mb-2">
+                                        <i class="fas fa-map-marker-alt mr-2"></i>Location Verification
+                                    </h5>
+                                    <div class="text-sm text-gray-600 mb-2">
+                                        Coordinates: ${report.latitude}, ${report.longitude}
+                                    </div>
+                                    <button onclick="showLocationOnMap(${report.latitude}, ${report.longitude})" 
+                                            class="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700">
+                                        View on Map
+                                    </button>
+                                </div>
+                            ` : ''}
+                            
+                            <!-- Verification Form -->
+                            <div class="bg-white border-2 border-gray-200 p-4 rounded-lg">
+                                <h5 class="font-semibold text-gray-900 mb-3">Verification Decision</h5>
+                                <form id="verification-form" onsubmit="submitVerification(event, '${reportId}')">
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Verification Status *</label>
+                                            <select id="verification-status" required class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                                <option value="">Select verification status...</option>
+                                                <option value="Verified">✓ Verified - Report is accurate</option>
+                                                <option value="Needs Review">⚠ Needs Review - Requires additional information</option>
+                                                <option value="Rejected">✗ Rejected - Report is inaccurate</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Verifier Name *</label>
+                                            <input type="text" id="verifier-name" required 
+                                                   placeholder="Enter your name" 
+                                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Verification Notes</label>
+                                            <textarea id="verification-notes" rows="3" 
+                                                      placeholder="Add any verification notes or recommendations..." 
+                                                      class="w-full px-3 py-2 border border-gray-300 rounded-lg"></textarea>
+                                        </div>
+                                        
+                                        <div class="flex space-x-3">
+                                            <button type="submit" class="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
+                                                Submit Verification
+                                            </button>
+                                            <button type="button" onclick="closeVerificationModal()" 
+                                                    class="flex-1 bg-gray-600 text-white py-2 rounded-lg hover:bg-gray-700">
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+    }).catch(error => {
+        console.error('Error loading report details:', error);
+        showError('Failed to load report details for verification.');
+    });
+}
+
+function closeVerificationModal() {
+    const modal = document.getElementById('verification-modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+async function submitVerification(event, reportId) {
+    event.preventDefault();
+    
+    const status = document.getElementById('verification-status').value;
+    const verifierName = document.getElementById('verifier-name').value;
+    const notes = document.getElementById('verification-notes').value;
+    
+    if (!status || !verifierName) {
+        showError('Please fill in all required fields.');
+        return;
+    }
+    
+    try {
+        showLoading();
+        
+        // Update the report with verification details
+        await invasiveSpeciesAPI.verifyReport(reportId, verifierName, status, notes);
+        
+        showSuccess(`Report ${reportId.substring(0, 8)} has been ${status.toLowerCase()}!`);
+        closeVerificationModal();
+        
+        // Refresh the recent reports to show updated status
+        await loadRecentReports();
+        
+    } catch (error) {
+        console.error('Error submitting verification:', error);
+        showError('Failed to submit verification. Please try again.');
+    } finally {
+        hideLoading();
+    }
+}
+
+function showLocationOnMap(lat, lon) {
+    // Switch to map section and center on the location
+    showSection('map');
+    
+    // Wait for map to load, then center on location
+    setTimeout(() => {
+        if (window.map) {
+            window.map.setView([lat, lon], 15);
+            
+            // Add a temporary marker
+            const marker = L.marker([lat, lon]).addTo(window.map);
+            marker.bindPopup('Report Location').openPopup();
+            
+            // Remove marker after 10 seconds
+            setTimeout(() => {
+                window.map.removeLayer(marker);
+            }, 10000);
+        }
+    }, 1000);
+    
+    closeVerificationModal();
+}
+
+// Reports Management Functions
+async function loadReportsManagement() {
+    try {
+        // Load all reports
+        const reports = await invasiveSpeciesAPI.getReports({ limit: 1000 });
+        const species = await invasiveSpeciesAPI.getSpecies({ limit: 100 });
+        
+        // Create species lookup
+        const speciesMap = {};
+        if (species.data) {
+            species.data.forEach(s => {
+                speciesMap[s.id] = s;
+            });
+        }
+        
+        // Update statistics
+        updateReportsStatistics(reports.data || []);
+        
+        // Display reports in table
+        displayReportsTable(reports.data || [], speciesMap);
+        
+        // Set up filter event listeners
+        setupReportsFilters();
+        
+    } catch (error) {
+        console.error('Error loading reports management:', error);
+        showError('Failed to load reports management data');
+    }
+}
+
+function updateReportsStatistics(reports) {
+    const pending = reports.filter(r => r.verification_status === 'Pending').length;
+    const verified = reports.filter(r => r.verification_status === 'Verified').length;
+    const highPriority = reports.filter(r => 
+        r.threat_assessment === 'High Risk' || 
+        r.threat_assessment === 'Immediate Action Required'
+    ).length;
+    const nasaEnhanced = reports.filter(r => r.nasa_data || r.nasa_enhanced).length;
+    
+    document.getElementById('pending-reports-count').textContent = pending;
+    document.getElementById('verified-reports-count').textContent = verified;
+    document.getElementById('high-priority-count').textContent = highPriority;
+    document.getElementById('nasa-enhanced-count').textContent = nasaEnhanced;
+}
+
+function displayReportsTable(reports, speciesMap) {
+    const tbody = document.getElementById('reports-table-body');
+    
+    if (!reports || reports.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="px-6 py-4 text-center text-gray-500">No reports found</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = reports.map(report => {
+        const species = speciesMap[report.species_id];
+        const speciesName = species ? species.scientific_name : 'Unknown Species';
+        
+        return `
+            <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">#${report.id?.substring(0, 8) || 'Unknown'}</div>
+                    ${report.nasa_enhanced ? '<div class="text-xs text-blue-600"><i class="fas fa-satellite mr-1"></i>NASA Enhanced</div>' : ''}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">${speciesName}</div>
+                    <div class="text-xs text-gray-500">Confidence: ${report.confidence_level || 'Unknown'}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">${report.location_description || 'Not specified'}</div>
+                    <div class="text-xs text-gray-500">${report.latitude || 'N/A'}, ${report.longitude || 'N/A'}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">${report.reporter_name || 'Anonymous'}</div>
+                    <div class="text-xs text-gray-500">${report.reporter_type || 'Unknown'}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 py-1 text-xs rounded-full ${getThreatColorClass(report.threat_assessment)}">
+                        ${report.threat_assessment || 'Unknown'}
+                    </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 py-1 text-xs rounded-full ${getStatusColor(report.verification_status)}">
+                        ${report.verification_status || 'Pending'}
+                    </span>
+                    ${report.verified_by ? `<div class="text-xs text-gray-500 mt-1">by ${report.verified_by}</div>` : ''}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    ${formatDate(report.report_date || report.created_at)}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div class="flex space-x-2">
+                        <button onclick="showVerificationModal('${report.id}')" 
+                                class="text-blue-600 hover:text-blue-900" title="Review/Verify">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        ${report.latitude && report.longitude ? `
+                            <button onclick="showLocationOnMap(${report.latitude}, ${report.longitude})" 
+                                    class="text-green-600 hover:text-green-900" title="View on Map">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </button>
+                        ` : ''}
+                        <button onclick="exportSingleReport('${report.id}')" 
+                                class="text-purple-600 hover:text-purple-900" title="Export Report">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function setupReportsFilters() {
+    const searchInput = document.getElementById('reports-search');
+    const verificationFilter = document.getElementById('verification-filter');
+    const threatFilter = document.getElementById('threat-filter-reports');
+    const dateFilter = document.getElementById('date-filter');
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce(filterReports, 300));
+    }
+    
+    if (verificationFilter) {
+        verificationFilter.addEventListener('change', filterReports);
+    }
+    
+    if (threatFilter) {
+        threatFilter.addEventListener('change', filterReports);
+    }
+    
+    if (dateFilter) {
+        dateFilter.addEventListener('change', filterReports);
+    }
+}
+
+async function filterReports() {
+    try {
+        // Get all reports and filters
+        const reports = await invasiveSpeciesAPI.getReports({ limit: 1000 });
+        const species = await invasiveSpeciesAPI.getSpecies({ limit: 100 });
+        
+        const searchTerm = document.getElementById('reports-search')?.value.toLowerCase() || '';
+        const verificationStatus = document.getElementById('verification-filter')?.value || '';
+        const threatLevel = document.getElementById('threat-filter-reports')?.value || '';
+        const dateRange = document.getElementById('date-filter')?.value || '';
+        
+        let filtered = reports.data || [];
+        
+        // Apply search filter
+        if (searchTerm) {
+            filtered = filtered.filter(report => 
+                report.id?.toLowerCase().includes(searchTerm) ||
+                report.location_description?.toLowerCase().includes(searchTerm) ||
+                report.reporter_name?.toLowerCase().includes(searchTerm) ||
+                report.notes?.toLowerCase().includes(searchTerm)
+            );
+        }
+        
+        // Apply verification status filter
+        if (verificationStatus) {
+            filtered = filtered.filter(report => report.verification_status === verificationStatus);
+        }
+        
+        // Apply threat level filter
+        if (threatLevel) {
+            filtered = filtered.filter(report => report.threat_assessment === threatLevel);
+        }
+        
+        // Apply date filter
+        if (dateRange) {
+            const now = new Date();
+            let startDate;
+            
+            switch (dateRange) {
+                case 'today':
+                    startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                    break;
+                case 'week':
+                    startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    break;
+                case 'month':
+                    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                    break;
+                case 'quarter':
+                    startDate = new Date(now.getFullYear(), now.getMonth() - 3, 1);
+                    break;
+            }
+            
+            if (startDate) {
+                filtered = filtered.filter(report => {
+                    const reportDate = new Date(report.report_date || report.created_at);
+                    return reportDate >= startDate;
+                });
+            }
+        }
+        
+        // Create species lookup
+        const speciesMap = {};
+        if (species.data) {
+            species.data.forEach(s => {
+                speciesMap[s.id] = s;
+            });
+        }
+        
+        // Update display
+        updateReportsStatistics(filtered);
+        displayReportsTable(filtered, speciesMap);
+        
+    } catch (error) {
+        console.error('Error filtering reports:', error);
+        showError('Failed to filter reports');
+    }
+}
+
+function getThreatColorClass(threatLevel) {
+    switch (threatLevel) {
+        case 'Immediate Action Required':
+            return 'bg-red-100 text-red-800';
+        case 'High Risk':
+            return 'bg-orange-100 text-orange-800';
+        case 'Moderate Risk':
+            return 'bg-yellow-100 text-yellow-800';
+        case 'Low Risk':
+            return 'bg-green-100 text-green-800';
+        default:
+            return 'bg-gray-100 text-gray-800';
+    }
+}
+
+async function exportReports() {
+    try {
+        const reports = await invasiveSpeciesAPI.getReports({ limit: 1000 });
+        const species = await invasiveSpeciesAPI.getSpecies({ limit: 100 });
+        
+        // Create enhanced export data
+        const exportData = {
+            export_info: {
+                exported_at: new Date().toISOString(),
+                total_reports: reports.data?.length || 0,
+                nasa_integration: true
+            },
+            reports: reports.data || [],
+            species_lookup: species.data || []
+        };
+        
+        // Create and download file
+        const jsonData = JSON.stringify(exportData, null, 2);
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `reports_export_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showSuccess('Reports exported successfully!');
+        
+    } catch (error) {
+        console.error('Error exporting reports:', error);
+        showError('Failed to export reports');
+    }
+}
+
+async function exportSingleReport(reportId) {
+    try {
+        const report = await invasiveSpeciesAPI.getReportById(reportId);
+        
+        const jsonData = JSON.stringify(report.data, null, 2);
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `report_${reportId.substring(0, 8)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showSuccess(`Report #${reportId.substring(0, 8)} exported successfully!`);
+        
+    } catch (error) {
+        console.error('Error exporting single report:', error);
+        showError('Failed to export report');
+    }
 }

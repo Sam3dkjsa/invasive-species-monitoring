@@ -1,0 +1,44 @@
+{
+  "name": "invasive-species-monitoring",
+  "version": "1.0.0",
+  "description": "NASA-enhanced invasive plant species monitoring system with interactive mapping and satellite data integration",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "test": "open http://localhost:8000/test-map.html",
+    "dev": "python -m http.server 8000 && open http://localhost:8000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YOUR_USERNAME/invasive-species-monitoring.git"
+  },
+  "keywords": [
+    "invasive-species",
+    "environmental-monitoring",
+    "nasa-api",
+    "satellite-data",
+    "leaflet",
+    "mapping",
+    "citizen-science",
+    "conservation",
+    "javascript",
+    "html5",
+    "css3"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/YOUR_USERNAME/invasive-species-monitoring/issues"
+  },
+  "homepage": "https://github.com/YOUR_USERNAME/invasive-species-monitoring#readme",
+  "dependencies": {},
+  "devDependencies": {},
+  "browser": {
+    "leaflet": "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js",
+    "chart.js": "https://cdn.jsdelivr.net/npm/chart.js",
+    "tailwindcss": "https://cdn.tailwindcss.com"
+  },
+  "engines": {
+    "python": ">=3.6"
+  }
+}

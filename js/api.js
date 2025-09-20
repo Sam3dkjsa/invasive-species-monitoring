@@ -93,6 +93,23 @@ class InvasiveSpeciesAPI {
     }
 
     async getReportById(id) {
+        // If using mock data, find in local data
+        if (this.useMockData) {
+            const report = this.mockData.reports.find(r => r.id === id);
+            if (report) {
+                // Get species information
+                const species = this.mockData.species.find(s => s.id === report.species_id);
+                return { 
+                    data: {
+                        ...report,
+                        species_name: species ? species.scientific_name : 'Unknown Species'
+                    }
+                };
+            } else {
+                throw new Error('Report not found');
+            }
+        }
+        
         return await this.makeRequest(`tables/sighting_reports/${id}`);
     }
 
@@ -112,11 +129,26 @@ class InvasiveSpeciesAPI {
         });
     }
 
-    async verifyReport(id, verifierName, status) {
-        return await this.updateReport(id, {
+    async verifyReport(id, verifierName, status, notes = '') {
+        const verificationData = {
             verification_status: status,
-            verified_by: verifierName
-        });
+            verified_by: verifierName,
+            verification_date: new Date().toISOString(),
+            verification_notes: notes
+        };
+        
+        // If using mock data, update the local mock data
+        if (this.useMockData) {
+            const report = this.mockData.reports.find(r => r.id === id);
+            if (report) {
+                Object.assign(report, verificationData);
+                return { data: report };
+            } else {
+                throw new Error('Report not found');
+            }
+        }
+        
+        return await this.updateReport(id, verificationData);
     }
 
     // Monitoring Locations API methods
@@ -418,10 +450,15 @@ class InvasiveSpeciesAPI {
                     reporter_email: 'jane@example.com',
                     reporter_type: 'Researcher',
                     verification_status: 'Verified',
+                    verified_by: 'Dr. Alex Johnson',
+                    verification_date: '2024-01-16T08:30:00Z',
+                    verification_notes: 'Confirmed identification through field analysis and NASA satellite imagery.',
                     report_date: '2024-01-15T10:30:00Z',
                     habitat_description: 'Disturbed forest edge with sandy soil',
                     notes: 'Large population spreading rapidly',
-                    follow_up_required: true
+                    follow_up_required: true,
+                    nasa_enhanced: true,
+                    satellite_confirmed: true
                 },
                 {
                     id: '2',
@@ -439,7 +476,30 @@ class InvasiveSpeciesAPI {
                     report_date: '2024-01-20T14:15:00Z',
                     habitat_description: 'Forest edge near creek',
                     notes: 'Covering native trees, immediate action needed',
-                    follow_up_required: true
+                    follow_up_required: true,
+                    nasa_enhanced: true
+                },
+                {
+                    id: '3',
+                    species_id: '3',
+                    latitude: 40.7128,
+                    longitude: -74.0060,
+                    location_description: 'Central Park area',
+                    population_size: 'Small (10-100)',
+                    threat_assessment: 'Moderate Risk',
+                    confidence_level: 'Medium',
+                    reporter_name: 'Sarah Wilson',
+                    reporter_email: 'sarah@example.com',
+                    reporter_type: 'Citizen Scientist',
+                    verification_status: 'Needs Review',
+                    verified_by: 'Dr. Maria Garcia',
+                    verification_date: '2024-01-18T12:00:00Z',
+                    verification_notes: 'Species identification uncertain. Recommend expert field verification.',
+                    report_date: '2024-01-17T09:45:00Z',
+                    habitat_description: 'Urban park setting near water feature',
+                    notes: 'First sighting in this area, monitoring recommended',
+                    follow_up_required: false,
+                    nasa_enhanced: false
                 }
             ],
             locations: [
