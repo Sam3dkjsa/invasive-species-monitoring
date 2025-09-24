@@ -132,10 +132,10 @@
                         Protecting ecosystems through collaborative monitoring and scientific research
                     </p>
                     <div class="flex flex-col sm:flex-row justify-center gap-4">
-                        <button class="bg-white text-green-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors" onclick="showSection('report')">
+                        <button class="bg-white text-green-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors" onclick="checkLoginAndShowSection('report')">
                             <i class="fas fa-plus-circle mr-2"></i>Report a Sighting
                         </button>
-                        <button class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition-colors" onclick="showSection('species')">
+                        <button class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition-colors" onclick="checkLoginAndShowSection('species')">
                             <i class="fas fa-search mr-2"></i>Browse Species
                         </button>
                     </div>
@@ -206,7 +206,7 @@
                         <div id="recent-reports" class="space-y-4">
                             <!-- Dynamic content will be loaded here -->
                         </div>
-                        <button class="w-full mt-4 bg-blue-50 text-blue-600 py-2 rounded-lg hover:bg-blue-100 transition-colors" onclick="showSection('reports-management')">
+                        <button class="w-full mt-4 bg-blue-50 text-blue-600 py-2 rounded-lg hover:bg-blue-100 transition-colors" onclick="checkLoginAndShowSection('reports-management')">
                             View All Reports
                         </button>
                     </div>
@@ -219,7 +219,7 @@
                         <div id="priority-alerts" class="space-y-4">
                             <!-- Dynamic content will be loaded here -->
                         </div>
-                        <button class="w-full mt-4 bg-red-50 text-red-600 py-2 rounded-lg hover:bg-red-100 transition-colors" onclick="showSection('analytics')">
+                        <button class="w-full mt-4 bg-red-50 text-red-600 py-2 rounded-lg hover:bg-red-100 transition-colors" onclick="checkLoginAndShowSection('analytics')">
                             View Management Dashboard
                         </button>
                     </div>
@@ -308,6 +308,12 @@
                             <label class="flex items-center">
                                 <input type="checkbox" id="show-monitoring" checked class="mr-2 rounded">
                                 <span class="text-sm">Monitoring Sites</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="show-nasa-data" checked class="mr-2 rounded">
+                                <span class="text-sm text-blue-700">
+                                    <i class="fas fa-satellite mr-1"></i>NASA Data
+                                </span>
                             </label>
                         </div>
                         
@@ -737,11 +743,12 @@
     <!-- Login Modal -->
     <div id="login-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl max-w-md w-full p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-semibold text-gray-900">Login / Register</h3>
-                <button onclick="hideLogin()" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
+            <div class="text-center mb-6">
+                <div class="bg-green-600 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                    <i class="fas fa-lock text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900">Access Required</h3>
+                <p class="text-gray-600 mt-2">Please log in to access the Invasive Plant Species Monitoring System</p>
             </div>
             
             <form id="login-form" class="space-y-4">

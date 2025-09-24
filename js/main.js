@@ -15,16 +15,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set up event listeners
     setupEventListeners();
     
-    // Load initial data
-    loadDashboardData();
+    // Check if user is logged in, if not show login
+    if (!currentUser) {
+        showLoginScreen();
+    } else {
+        // Load initial data only if user is logged in
+        loadDashboardData();
+    }
 });
 
 // Initialize the application
 function initializeApp() {
     console.log('Initializing Invasive Plant Species Monitoring System...');
     
-    // Show the dashboard section by default
-    showSection('dashboard');
+    // Hide all main content initially
+    hideMainContent();
     
     // Initialize user permissions (hide restricted features by default)
     updateVerificationPermissions(null);
@@ -47,6 +52,11 @@ function setupEventListeners() {
     document.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
+            if (!currentUser) {
+                showError('Please log in to access this feature.');
+                showLoginScreen();
+                return;
+            }
             const section = this.getAttribute('data-section');
             showSection(section);
         });
@@ -56,6 +66,11 @@ function setupEventListeners() {
     document.querySelectorAll('#mobile-menu a').forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
+            if (!currentUser) {
+                showError('Please log in to access this feature.');
+                showLoginScreen();
+                return;
+            }
             const section = this.getAttribute('data-section');
             showSection(section);
             toggleMobileMenu(); // Close mobile menu
@@ -93,6 +108,13 @@ function setupEventListeners() {
 
 // Show specific section
 function showSection(sectionName) {
+    // Check if user is logged in before allowing navigation
+    if (!currentUser) {
+        showError('Please log in to access this feature.');
+        showLoginScreen();
+        return;
+    }
+    
     // Hide all sections
     document.querySelectorAll('.section').forEach(section => {
         section.classList.add('hidden');
@@ -336,8 +358,14 @@ function displaySpecies(species) {
     
     container.innerHTML = species.map(s => `
         <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
-            <div class="h-48 bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center relative">
-                <i class="fas fa-seedling text-white text-4xl"></i>
+            <div class="h-48 bg-gray-200 relative overflow-hidden">
+                <img src="${s.image_url || 'https://picsum.photos/400/300?random=' + s.id}" 
+                     alt="${s.scientific_name}" 
+                     class="w-full h-full object-cover"
+                     onerror="handleImageError(this, ${JSON.stringify(s.backup_image_urls || [])})">
+                <div class="hidden w-full h-full bg-gradient-to-br from-green-400 to-green-600 items-center justify-center">
+                    <i class="fas fa-seedling text-white text-4xl"></i>
+                </div>
                 ${s.nasa_data ? `
                     <div class="absolute top-2 right-2 bg-blue-600 text-white px-2 py-1 rounded-full text-xs">
                         <i class="fas fa-satellite mr-1"></i>NASA Enhanced
@@ -478,15 +506,14 @@ async function handleLogin(event) {
         currentUser = user;
         
         showSuccess(`Welcome, ${user.full_name}!`);
-        hideLogin();
+        hideLoginScreen();
         
-        // Update UI to show logged-in state
+        // Show main content and update UI to show logged-in state
+        showMainContent();
         updateLoginState(user);
         
-        // Refresh dashboard to show verification options if user has permission
-        if (currentSection === 'dashboard') {
-            await loadRecentReports();
-        }
+        // Load dashboard by default after login
+        showSection('dashboard');
         
     } catch (error) {
         console.error('Login failed:', error);
@@ -622,6 +649,10 @@ function logout() {
     currentUser = null;
     invasiveSpeciesAPI.logout();
     
+    // Hide all main content and show login screen
+    hideMainContent();
+    showLoginScreen();
+    
     // Reset login button
     const loginButton = document.querySelector('button[onclick="showUserMenu"]');
     if (loginButton) {
@@ -631,13 +662,6 @@ function logout() {
     
     // Hide verification features
     updateVerificationPermissions(null);
-    
-    // Refresh current section
-    if (currentSection === 'dashboard') {
-        loadRecentReports();
-    } else if (currentSection === 'reports-management') {
-        showSection('dashboard'); // Redirect to dashboard if on restricted section
-    }
     
     // Remove any open menus
     document.querySelectorAll('.absolute.right-0.top-full').forEach(menu => menu.remove());
@@ -692,6 +716,96 @@ function hideLogin() {
     document.getElementById('login-modal').classList.add('hidden');
 }
 
+// Show login screen (full screen overlay)
+function showLoginScreen() {
+    // Hide main navigation and content
+    const nav = document.querySelector('nav');
+    const main = document.querySelector('main');
+    
+    if (nav) nav.style.display = 'none';
+    if (main) main.style.display = 'none';
+    
+    // Show login modal
+    showLogin();
+    
+    // Make login modal cover full screen
+    const loginModal = document.getElementById('login-modal');
+    if (loginModal) {
+        loginModal.style.position = 'fixed';
+        loginModal.style.top = '0';
+        loginModal.style.left = '0';
+        loginModal.style.width = '100%';
+        loginModal.style.height = '100%';
+        loginModal.style.zIndex = '9999';
+        loginModal.style.backgroundColor = 'rgba(0, 0, 0, 0.95)';
+        
+        // Prevent closing the modal
+        const closeButton = loginModal.querySelector('button[onclick="hideLogin()"]');
+        if (closeButton) {
+            closeButton.style.display = 'none';
+        }
+    }
+}
+
+// Hide login screen and show main content
+function hideLoginScreen() {
+    // Show main navigation and content
+    const nav = document.querySelector('nav');
+    const main = document.querySelector('main');
+    
+    if (nav) nav.style.display = 'block';
+    if (main) main.style.display = 'block';
+    
+    // Hide login modal
+    hideLogin();
+    
+    // Reset login modal styles
+    const loginModal = document.getElementById('login-modal');
+    if (loginModal) {
+        loginModal.style.position = '';
+        loginModal.style.top = '';
+        loginModal.style.left = '';
+        loginModal.style.width = '';
+        loginModal.style.height = '';
+        loginModal.style.zIndex = '';
+        loginModal.style.backgroundColor = '';
+        
+        // Show close button again
+        const closeButton = loginModal.querySelector('button[onclick="hideLogin()"]');
+        if (closeButton) {
+            closeButton.style.display = 'block';
+        }
+    }
+}
+
+// Hide main content
+function hideMainContent() {
+    const nav = document.querySelector('nav');
+    const main = document.querySelector('main');
+    
+    if (nav) nav.style.display = 'none';
+    if (main) main.style.display = 'none';
+}
+
+// Show main content
+function showMainContent() {
+    const nav = document.querySelector('nav');
+    const main = document.querySelector('main');
+    
+    if (nav) nav.style.display = 'block';
+    if (main) main.style.display = 'block';
+}
+
+// Helper function to check login before showing section
+function checkLoginAndShowSection(sectionName) {
+    if (!currentUser) {
+        showError('Please log in to access this feature.');
+        showLoginScreen();
+        return;
+    }
+    showSection(sectionName);
+}
+
 function showLoading() {
     document.getElementById('loading-spinner').classList.remove('hidden');
 }
@@ -722,6 +836,24 @@ function formatDate(dateString) {
         month: 'short', 
         day: 'numeric' 
     });
+}
+
+// Handle image loading errors with backup URLs
+function handleImageError(img, backupUrls = []) {
+    // Try backup URLs first
+    if (backupUrls && backupUrls.length > 0) {
+        const nextUrl = backupUrls.shift();
+        img.onerror = function() {
+            handleImageError(img, backupUrls);
+        };
+        img.src = nextUrl;
+    } else {
+        // No more backup URLs, show fallback
+        img.style.display = 'none';
+        if (img.nextElementSibling) {
+            img.nextElementSibling.style.display = 'flex';
+        }
+    }
 }
 
 function getStatusColor(status) {

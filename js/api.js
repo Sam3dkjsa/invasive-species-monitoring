@@ -409,7 +409,12 @@ class InvasiveSpeciesAPI {
                     flowering_period: 'Year-round in warm climates',
                     habitat_types: ['Forest', 'Grassland', 'Urban'],
                     identification_features: 'Small flowers in clusters, rough leaves, black berries',
-                    control_methods: 'Mechanical removal, herbicide treatment'
+                    control_methods: 'Mechanical removal, herbicide treatment',
+                    image_url: 'https://images.unsplash.com/photo-1595276347278-4b1e43b49c6a?w=400&h=300&fit=crop&auto=format',
+                    backup_image_urls: [
+                        'https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Lantana_camara_-_Flickr_-_Dick_Culbert.jpg/400px-Lantana_camara_-_Flickr_-_Dick_Culbert.jpg',
+                        'https://cdn.pixabay.com/photo/2016/08/11/08/04/lantana-1585420_960_720.jpg'
+                    ]
                 },
                 {
                     id: '2',
@@ -421,7 +426,12 @@ class InvasiveSpeciesAPI {
                     flowering_period: 'Late summer',
                     habitat_types: ['Forest', 'Riparian'],
                     identification_features: 'Large three-leaflet compound leaves, purple flowers',
-                    control_methods: 'Persistent cutting, grazing, herbicide'
+                    control_methods: 'Persistent cutting, grazing, herbicide',
+                    image_url: 'https://images.unsplash.com/photo-1589481169991-5a0c5d4dffa2?w=400&h=300&fit=crop&auto=format',
+                    backup_image_urls: [
+                        'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Kudzu_on_trees_in_Atlanta%2C_Georgia.jpg/400px-Kudzu_on_trees_in_Atlanta%2C_Georgia.jpg',
+                        'https://cdn.pixabay.com/photo/2018/09/12/14/14/kudzu-3672436_960_720.jpg'
+                    ]
                 },
                 {
                     id: '3',
@@ -433,7 +443,138 @@ class InvasiveSpeciesAPI {
                     flowering_period: 'Spring to fall',
                     habitat_types: ['Riparian', 'Wetland'],
                     identification_features: 'Scale-like leaves, pink flowers, feathery appearance',
-                    control_methods: 'Cutting and herbicide treatment'
+                    control_methods: 'Cutting and herbicide treatment',
+                    image_url: 'https://images.unsplash.com/photo-1524239850471-f1f5b4ef7012?w=400&h=300&fit=crop&auto=format'
+                },
+                {
+                    id: '4',
+                    scientific_name: 'Lythrum salicaria',
+                    common_names: ['Purple Loosestrife', 'Spiked Loosestrife'],
+                    threat_level: 'High',
+                    native_range: 'Europe and Asia',
+                    description: 'Perennial wetland plant that forms dense stands, displacing native wetland species.',
+                    flowering_period: 'Mid to late summer',
+                    habitat_types: ['Wetland', 'Riparian'],
+                    identification_features: 'Purple flower spikes, lance-shaped leaves, square stems',
+                    control_methods: 'Hand pulling, cutting, biological control',
+                    image_url: 'https://images.unsplash.com/photo-1563789031959-4c02c61fcccd?w=400&h=300&fit=crop&auto=format'
+                },
+                {
+                    id: '5',
+                    scientific_name: 'Reynoutria japonica',
+                    common_names: ['Japanese Knotweed', 'Bamboo'],
+                    threat_level: 'Severe',
+                    native_range: 'East Asia',
+                    description: 'Aggressive perennial that forms dense colonies and can damage infrastructure.',
+                    flowering_period: 'Late summer to early fall',
+                    habitat_types: ['Riparian', 'Urban', 'Forest'],
+                    identification_features: 'Hollow stems, heart-shaped leaves, bamboo-like appearance',
+                    control_methods: 'Repeated cutting, herbicide injection, excavation',
+                    image_url: 'https://images.unsplash.com/photo-1588068738853-84030b1c5bc1?w=400&h=300&fit=crop&auto=format'
+                },
+                {
+                    id: '6',
+                    scientific_name: 'Bromus tectorum',
+                    common_names: ['Cheatgrass', 'Downy Brome'],
+                    threat_level: 'Severe',
+                    native_range: 'Europe and Southwest Asia',
+                    description: 'Annual grass that increases fire frequency and outcompetes native plants.',
+                    flowering_period: 'Early spring',
+                    habitat_types: ['Grassland', 'Desert'],
+                    identification_features: 'Drooping seed heads, soft hairy leaves, reddish color when dry',
+                    control_methods: 'Targeted grazing, herbicide, revegetation',
+                    image_url: 'https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=400&h=300&fit=crop&auto=format'
+                },
+                {
+                    id: '7',
+                    scientific_name: 'Centaurea diffusa',
+                    common_names: ['Diffuse Knapweed', 'White Knapweed'],
+                    threat_level: 'High',
+                    native_range: 'Eastern Europe and Asia',
+                    description: 'Biennial herb that reduces forage quality and biodiversity in rangelands.',
+                    flowering_period: 'Summer to early fall',
+                    habitat_types: ['Grassland', 'Desert'],
+                    identification_features: 'White to pink flowers, deeply divided leaves, spiny bracts',
+                    control_methods: 'Biological control, herbicide, hand removal',
+                    image_url: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=300&fit=crop&auto=format'
+                },
+                {
+                    id: '8',
+                    scientific_name: 'Cytisus scoparius',
+                    common_names: ['Scotch Broom', 'English Broom'],
+                    threat_level: 'High',
+                    native_range: 'Western and Central Europe',
+                    description: 'Evergreen shrub that forms dense stands and increases fire risk.',
+                    flowering_period: 'Late spring to early summer',
+                    habitat_types: ['Forest', 'Grassland'],
+                    identification_features: 'Bright yellow flowers, green ridged stems, small leaves',
+                    control_methods: 'Cutting before seed set, herbicide, hand pulling young plants',
+                    image_url: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop&auto=format'
+                },
+                {
+                    id: '9',
+                    scientific_name: 'Elaeagnus angustifolia',
+                    common_names: ['Russian Olive', 'Oleaster'],
+                    threat_level: 'Moderate',
+                    native_range: 'Western and Central Asia',
+                    description: 'Deciduous tree that forms thickets along waterways and displaces native riparian vegetation.',
+                    flowering_period: 'Late spring',
+                    habitat_types: ['Riparian', 'Wetland'],
+                    identification_features: 'Silvery leaves, fragrant yellow flowers, olive-like fruits',
+                    control_methods: 'Cutting and treating stumps, herbicide',
+                    image_url: 'https://images.unsplash.com/photo-1601004890684-d8cbf643f5f2?w=400&h=300&fit=crop&auto=format'
+                },
+                {
+                    id: '10',
+                    scientific_name: 'Euphorbia esula',
+                    common_names: ['Leafy Spurge', 'Wolf\'s Milk'],
+                    threat_level: 'High',
+                    native_range: 'Europe and Asia',
+                    description: 'Perennial herb with toxic milky sap that reduces rangeland productivity.',
+                    flowering_period: 'Late spring to early summer',
+                    habitat_types: ['Grassland', 'Forest'],
+                    identification_features: 'Yellow-green flower bracts, narrow leaves, milky sap',
+                    control_methods: 'Biological control, herbicide, grazing management',
+                    image_url: 'https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=400&h=300&fit=crop&auto=format'
+                },
+                {
+                    id: '11',
+                    scientific_name: 'Hedera helix',
+                    common_names: ['English Ivy', 'Common Ivy'],
+                    threat_level: 'High',
+                    native_range: 'Europe, Western Asia, North Africa',
+                    description: 'Evergreen climbing vine that smothers understory vegetation and can kill trees.',
+                    flowering_period: 'Fall',
+                    habitat_types: ['Forest', 'Urban'],
+                    identification_features: 'Lobed leaves, climbing or trailing habit, dark berries',
+                    control_methods: 'Hand removal, cutting, herbicide treatment',
+                    image_url: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop&auto=format'
+                },
+                {
+                    id: '12',
+                    scientific_name: 'Alliaria petiolata',
+                    common_names: ['Garlic Mustard', 'Jack-by-the-hedge'],
+                    threat_level: 'Moderate',
+                    native_range: 'Europe, Asia, North Africa',
+                    description: 'Biennial herb that invades forest understories and releases chemicals inhibiting other plants.',
+                    flowering_period: 'Late spring',
+                    habitat_types: ['Forest', 'Urban'],
+                    identification_features: 'Heart-shaped serrated leaves, white four-petaled flowers, garlic odor',
+                    control_methods: 'Hand pulling, cutting before seed set',
+                    image_url: 'https://images.unsplash.com/photo-1588436706487-9d55d73a39e3?w=400&h=300&fit=crop&auto=format'
+                },
+                {
+                    id: '13',
+                    scientific_name: 'Salvinia molesta',
+                    common_names: ['Giant Salvinia', 'Water Spangles'],
+                    threat_level: 'Severe',
+                    native_range: 'South America',
+                    description: 'Floating aquatic fern that forms dense mats, blocking sunlight and depleting oxygen.',
+                    flowering_period: 'Reproduces by spores and fragmentation',
+                    habitat_types: ['Wetland'],
+                    identification_features: 'Three-leaf clusters, chain-like pattern of hairs on leaves',
+                    control_methods: 'Mechanical removal, herbicide, biological control',
+                    image_url: 'https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400&h=300&fit=crop&auto=format'
                 }
             ],
             reports: [
@@ -780,6 +921,60 @@ class InvasiveSpeciesAPI {
                 status: 'NASA satellite analytics unavailable',
                 last_updated: new Date().toISOString()
             };
+        }
+    }
+
+    // Get NASA invasive plants locations with enhanced satellite data
+    async getNasaInvasivePlantsLocations() {
+        try {
+            // Simulate NASA-detected invasive species locations
+            return [
+                {
+                    id: 'nasa_kudzu_1',
+                    species_name: 'Kudzu (Pueraria montana)',
+                    scientific_name: 'Pueraria montana',
+                    latitude: 33.7490,
+                    longitude: -84.3880,
+                    threat_level: 'Severe',
+                    coverage_area: '150 hectares',
+                    detection_method: 'Multi-spectral satellite analysis',
+                    confidence: 'High - Multi-temporal verification',
+                    last_detected: new Date().toISOString().split('T')[0],
+                    growth_rate: 'Rapid expansion - 15% increase in 6 months',
+                    environmental_impact: 'High - Forest canopy displacement and native species suppression'
+                },
+                {
+                    id: 'nasa_loosestrife_1',
+                    species_name: 'Purple Loosestrife (Lythrum salicaria)',
+                    scientific_name: 'Lythrum salicaria',
+                    latitude: 44.9537,
+                    longitude: -93.0900,
+                    threat_level: 'High',
+                    coverage_area: '85 hectares',
+                    detection_method: 'Phenological satellite monitoring',
+                    confidence: 'High - Seasonal pattern analysis',
+                    last_detected: new Date().toISOString().split('T')[0],
+                    growth_rate: 'Seasonal expansion in wetland areas',
+                    environmental_impact: 'Medium - Wetland ecosystem disruption'
+                },
+                {
+                    id: 'nasa_knotweed_1',
+                    species_name: 'Japanese Knotweed (Reynoutria japonica)',
+                    scientific_name: 'Reynoutria japonica',
+                    latitude: 40.7128,
+                    longitude: -74.0060,
+                    threat_level: 'High',
+                    coverage_area: '35 hectares',
+                    detection_method: 'AI-powered satellite classification',
+                    confidence: 'High - Machine learning validated',
+                    last_detected: new Date().toISOString().split('T')[0],
+                    growth_rate: 'Linear expansion along waterways',
+                    environmental_impact: 'High - Infrastructure damage and erosion risk'
+                }
+            ];
+        } catch (error) {
+            console.error('Error loading NASA invasive plants locations:', error);
+            return [];
         }
     }
 }
