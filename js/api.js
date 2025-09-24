@@ -410,10 +410,10 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Forest', 'Grassland', 'Urban'],
                     identification_features: 'Small flowers in clusters, rough leaves, black berries',
                     control_methods: 'Mechanical removal, herbicide treatment',
-                    image_url: 'https://picsum.photos/400/300?random=1',
+                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Lantana_camara_-_Flickr_-_Dick_Culbert.jpg/400px-Lantana_camara_-_Flickr_-_Dick_Culbert.jpg',
                     backup_image_urls: [
-                        'https://via.placeholder.com/400x300/90EE90/000000?text=Lantana',
-                        'https://dummyimage.com/400x300/90EE90/000000&text=Lantana+camara'
+                        'https://picsum.photos/400/300?random=1',
+                        'https://via.placeholder.com/400x300/90EE90/000000?text=Lantana'
                     ]
                 },
                 {
@@ -427,10 +427,10 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Forest', 'Riparian'],
                     identification_features: 'Large three-leaflet compound leaves, purple flowers',
                     control_methods: 'Persistent cutting, grazing, herbicide',
-                    image_url: 'https://picsum.photos/400/300?random=2',
+                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Kudzu_on_trees_in_Atlanta%2C_Georgia.jpg/400px-Kudzu_on_trees_in_Atlanta%2C_Georgia.jpg',
                     backup_image_urls: [
-                        'https://via.placeholder.com/400x300/228B22/FFFFFF?text=Kudzu',
-                        'https://dummyimage.com/400x300/228B22/FFFFFF&text=Pueraria+montana'
+                        'https://picsum.photos/400/300?random=2',
+                        'https://via.placeholder.com/400x300/228B22/FFFFFF?text=Kudzu'
                     ]
                 },
                 {
@@ -444,10 +444,10 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Riparian', 'Wetland'],
                     identification_features: 'Scale-like leaves, pink flowers, feathery appearance',
                     control_methods: 'Cutting and herbicide treatment',
-                    image_url: 'https://picsum.photos/400/300?random=3',
+                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Tamarix_ramosissima_flowers.jpg/400px-Tamarix_ramosissima_flowers.jpg',
                     backup_image_urls: [
-                        'https://via.placeholder.com/400x300/FFB6C1/000000?text=Saltcedar',
-                        'https://dummyimage.com/400x300/FFB6C1/000000&text=Tamarix'
+                        'https://picsum.photos/400/300?random=3',
+                        'https://via.placeholder.com/400x300/FFB6C1/000000?text=Saltcedar'
                     ]
                 },
                 {
@@ -461,7 +461,7 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Wetland', 'Riparian'],
                     identification_features: 'Purple flower spikes, lance-shaped leaves, square stems',
                     control_methods: 'Hand pulling, cutting, biological control',
-                    image_url: 'https://picsum.photos/400/300?random=4'
+                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Lythrum_salicaria_-_purple_loosestrife_02.jpg/400px-Lythrum_salicaria_-_purple_loosestrife_02.jpg'
                 },
                 {
                     id: '5',
@@ -474,7 +474,7 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Riparian', 'Urban', 'Forest'],
                     identification_features: 'Hollow stems, heart-shaped leaves, bamboo-like appearance',
                     control_methods: 'Repeated cutting, herbicide injection, excavation',
-                    image_url: 'https://picsum.photos/400/300?random=5'
+                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Fallopia_japonica_flowers.jpg/400px-Fallopia_japonica_flowers.jpg'
                 },
                 {
                     id: '6',
@@ -487,7 +487,7 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Grassland', 'Desert'],
                     identification_features: 'Drooping seed heads, soft hairy leaves, reddish color when dry',
                     control_methods: 'Targeted grazing, herbicide, revegetation',
-                    image_url: 'https://picsum.photos/400/300?random=6'
+                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Bromus_tectorum_cheatgrass.jpg/400px-Bromus_tectorum_cheatgrass.jpg'
                 },
                 {
                     id: '7',
@@ -500,7 +500,7 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Grassland', 'Desert'],
                     identification_features: 'White to pink flowers, deeply divided leaves, spiny bracts',
                     control_methods: 'Biological control, herbicide, hand removal',
-                    image_url: 'https://picsum.photos/400/300?random=7'
+                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Centaurea_diffusa_flower.jpg/400px-Centaurea_diffusa_flower.jpg'
                 },
                 {
                     id: '8',
@@ -513,7 +513,7 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Forest', 'Grassland'],
                     identification_features: 'Bright yellow flowers, green ridged stems, small leaves',
                     control_methods: 'Cutting before seed set, herbicide, hand pulling young plants',
-                    image_url: 'https://picsum.photos/400/300?random=8'
+                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Cytisus_scoparius_flowers.jpg/400px-Cytisus_scoparius_flowers.jpg'
                 },
                 {
                     id: '9',
@@ -526,7 +526,7 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Riparian', 'Wetland'],
                     identification_features: 'Silvery leaves, fragrant yellow flowers, olive-like fruits',
                     control_methods: 'Cutting and treating stumps, herbicide',
-                    image_url: 'https://picsum.photos/400/300?random=9'
+                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Elaeagnus_angustifolia_flowers.jpg/400px-Elaeagnus_angustifolia_flowers.jpg'
                 },
                 {
                     id: '10',
@@ -539,7 +539,7 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Grassland', 'Forest'],
                     identification_features: 'Yellow-green flower bracts, narrow leaves, milky sap',
                     control_methods: 'Biological control, herbicide, grazing management',
-                    image_url: 'https://picsum.photos/400/300?random=10'
+                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Euphorbia_esula_flowers.jpg/400px-Euphorbia_esula_flowers.jpg'
                 },
                 {
                     id: '11',
@@ -552,7 +552,7 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Forest', 'Urban'],
                     identification_features: 'Lobed leaves, climbing or trailing habit, dark berries',
                     control_methods: 'Hand removal, cutting, herbicide treatment',
-                    image_url: 'https://picsum.photos/400/300?random=11'
+                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Hedera_helix_berries.jpg/400px-Hedera_helix_berries.jpg'
                 },
                 {
                     id: '12',
@@ -565,7 +565,7 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Forest', 'Urban'],
                     identification_features: 'Heart-shaped serrated leaves, white four-petaled flowers, garlic odor',
                     control_methods: 'Hand pulling, cutting before seed set',
-                    image_url: 'https://picsum.photos/400/300?random=12'
+                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Alliaria_petiolata_flowers.jpg/400px-Alliaria_petiolata_flowers.jpg'
                 },
                 {
                     id: '13',
@@ -578,7 +578,7 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Wetland'],
                     identification_features: 'Three-leaf clusters, chain-like pattern of hairs on leaves',
                     control_methods: 'Mechanical removal, herbicide, biological control',
-                    image_url: 'https://picsum.photos/400/300?random=13'
+                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Salvinia_molesta_floating.jpg/400px-Salvinia_molesta_floating.jpg'
                 }
             ],
             reports: [
@@ -931,14 +931,28 @@ class InvasiveSpeciesAPI {
     // Get NASA invasive plants locations with enhanced satellite data
     async getNasaInvasivePlantsLocations() {
         try {
-            // Simulate NASA-detected invasive species locations
+            // Simulate NASA-detected invasive species locations for all 13 species
             return [
+                {
+                    id: 'nasa_lantana_1',
+                    species_name: 'Common Lantana (Lantana camara)',
+                    scientific_name: 'Lantana camara',
+                    latitude: 25.7617,
+                    longitude: -80.1918, // Miami, FL
+                    threat_level: 'High',
+                    coverage_area: '45 hectares',
+                    detection_method: 'Multi-spectral satellite analysis',
+                    confidence: 'High - Visual confirmation',
+                    last_detected: new Date().toISOString().split('T')[0],
+                    growth_rate: 'Rapid expansion in urban areas',
+                    environmental_impact: 'Medium - Native flora displacement'
+                },
                 {
                     id: 'nasa_kudzu_1',
                     species_name: 'Kudzu (Pueraria montana)',
                     scientific_name: 'Pueraria montana',
                     latitude: 33.7490,
-                    longitude: -84.3880,
+                    longitude: -84.3880, // Atlanta, GA
                     threat_level: 'Severe',
                     coverage_area: '150 hectares',
                     detection_method: 'Multi-spectral satellite analysis',
@@ -948,11 +962,25 @@ class InvasiveSpeciesAPI {
                     environmental_impact: 'High - Forest canopy displacement and native species suppression'
                 },
                 {
+                    id: 'nasa_saltcedar_1',
+                    species_name: 'Saltcedar (Tamarix ramosissima)',
+                    scientific_name: 'Tamarix ramosissima',
+                    latitude: 36.1627,
+                    longitude: -115.1627, // Las Vegas, NV
+                    threat_level: 'High',
+                    coverage_area: '320 hectares',
+                    detection_method: 'Hyperspectral imaging',
+                    confidence: 'High - Drought-stress analysis',
+                    last_detected: new Date().toISOString().split('T')[0],
+                    growth_rate: 'Steady expansion along water sources',
+                    environmental_impact: 'High - Water table alteration'
+                },
+                {
                     id: 'nasa_loosestrife_1',
                     species_name: 'Purple Loosestrife (Lythrum salicaria)',
                     scientific_name: 'Lythrum salicaria',
                     latitude: 44.9537,
-                    longitude: -93.0900,
+                    longitude: -93.0900, // Minneapolis, MN
                     threat_level: 'High',
                     coverage_area: '85 hectares',
                     detection_method: 'Phenological satellite monitoring',
@@ -966,7 +994,7 @@ class InvasiveSpeciesAPI {
                     species_name: 'Japanese Knotweed (Reynoutria japonica)',
                     scientific_name: 'Reynoutria japonica',
                     latitude: 40.7128,
-                    longitude: -74.0060,
+                    longitude: -74.0060, // New York, NY
                     threat_level: 'High',
                     coverage_area: '35 hectares',
                     detection_method: 'AI-powered satellite classification',
@@ -974,6 +1002,118 @@ class InvasiveSpeciesAPI {
                     last_detected: new Date().toISOString().split('T')[0],
                     growth_rate: 'Linear expansion along waterways',
                     environmental_impact: 'High - Infrastructure damage and erosion risk'
+                },
+                {
+                    id: 'nasa_cheatgrass_1',
+                    species_name: 'Cheatgrass (Bromus tectorum)',
+                    scientific_name: 'Bromus tectorum',
+                    latitude: 39.7392,
+                    longitude: -104.9903, // Denver, CO
+                    threat_level: 'Severe',
+                    coverage_area: '1200 hectares',
+                    detection_method: 'Fire risk assessment mapping',
+                    confidence: 'High - Multi-year trend analysis',
+                    last_detected: new Date().toISOString().split('T')[0],
+                    growth_rate: 'Exponential spread in dry seasons',
+                    environmental_impact: 'Severe - Fire cycle alteration'
+                },
+                {
+                    id: 'nasa_knapweed_1',
+                    species_name: 'Diffuse Knapweed (Centaurea diffusa)',
+                    scientific_name: 'Centaurea diffusa',
+                    latitude: 47.0379,
+                    longitude: -122.9007, // Olympia, WA
+                    threat_level: 'High',
+                    coverage_area: '67 hectares',
+                    detection_method: 'Spectral signature analysis',
+                    confidence: 'Medium - Requires field verification',
+                    last_detected: new Date().toISOString().split('T')[0],
+                    growth_rate: 'Moderate expansion in grasslands',
+                    environmental_impact: 'Medium - Grazing land degradation'
+                },
+                {
+                    id: 'nasa_scotchbroom_1',
+                    species_name: 'Scotch Broom (Cytisus scoparius)',
+                    scientific_name: 'Cytisus scoparius',
+                    latitude: 45.5152,
+                    longitude: -122.6784, // Portland, OR
+                    threat_level: 'High',
+                    coverage_area: '89 hectares',
+                    detection_method: 'Flowering period detection',
+                    confidence: 'High - Yellow flower spectral analysis',
+                    last_detected: new Date().toISOString().split('T')[0],
+                    growth_rate: 'Rapid spring expansion',
+                    environmental_impact: 'High - Fire hazard increase'
+                },
+                {
+                    id: 'nasa_russianolive_1',
+                    species_name: 'Russian Olive (Elaeagnus angustifolia)',
+                    scientific_name: 'Elaeagnus angustifolia',
+                    latitude: 40.2731,
+                    longitude: -76.8839, // Harrisburg, PA
+                    threat_level: 'Moderate',
+                    coverage_area: '78 hectares',
+                    detection_method: 'Silvery foliage detection',
+                    confidence: 'Medium - Seasonal variation',
+                    last_detected: new Date().toISOString().split('T')[0],
+                    growth_rate: 'Slow to moderate riparian spread',
+                    environmental_impact: 'Medium - Riparian habitat alteration'
+                },
+                {
+                    id: 'nasa_leafyspurge_1',
+                    species_name: 'Leafy Spurge (Euphorbia esula)',
+                    scientific_name: 'Euphorbia esula',
+                    latitude: 46.8083,
+                    longitude: -100.7837, // Bismarck, ND
+                    threat_level: 'High',
+                    coverage_area: '156 hectares',
+                    detection_method: 'Yellow-green bract identification',
+                    confidence: 'High - Distinctive spectral signature',
+                    last_detected: new Date().toISOString().split('T')[0],
+                    growth_rate: 'Aggressive rhizome expansion',
+                    environmental_impact: 'High - Rangeland productivity loss'
+                },
+                {
+                    id: 'nasa_englishivy_1',
+                    species_name: 'English Ivy (Hedera helix)',
+                    scientific_name: 'Hedera helix',
+                    latitude: 47.6062,
+                    longitude: -122.3321, // Seattle, WA
+                    threat_level: 'High',
+                    coverage_area: '43 hectares',
+                    detection_method: 'Canopy cover analysis',
+                    confidence: 'High - Tree mortality correlation',
+                    last_detected: new Date().toISOString().split('T')[0],
+                    growth_rate: 'Persistent vertical and horizontal spread',
+                    environmental_impact: 'High - Native understory elimination'
+                },
+                {
+                    id: 'nasa_garlicmustard_1',
+                    species_name: 'Garlic Mustard (Alliaria petiolata)',
+                    scientific_name: 'Alliaria petiolata',
+                    latitude: 42.3601,
+                    longitude: -71.0589, // Boston, MA
+                    threat_level: 'Moderate',
+                    coverage_area: '29 hectares',
+                    detection_method: 'Forest understory analysis',
+                    confidence: 'Medium - Mixed vegetation challenge',
+                    last_detected: new Date().toISOString().split('T')[0],
+                    growth_rate: 'Biennial cycle expansion',
+                    environmental_impact: 'Medium - Forest herb layer disruption'
+                },
+                {
+                    id: 'nasa_salvinia_1',
+                    species_name: 'Giant Salvinia (Salvinia molesta)',
+                    scientific_name: 'Salvinia molesta',
+                    latitude: 29.9511,
+                    longitude: -90.0715, // New Orleans, LA
+                    threat_level: 'Severe',
+                    coverage_area: '234 hectares',
+                    detection_method: 'Aquatic surface coverage mapping',
+                    confidence: 'High - Water surface spectral analysis',
+                    last_detected: new Date().toISOString().split('T')[0],
+                    growth_rate: 'Exponential mat formation',
+                    environmental_impact: 'Severe - Aquatic oxygen depletion'
                 }
             ];
         } catch (error) {
