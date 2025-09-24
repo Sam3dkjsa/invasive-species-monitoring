@@ -327,7 +327,7 @@ function createSightingPopup(report, species) {
                     <img src="${speciesImage}" 
                          alt="${speciesName}" 
                          class="w-full h-32 object-cover rounded-lg"
-                         onerror="handleImageError(this, ${JSON.stringify(species?.backup_image_urls || [])})">
+                         onerror="if(window.handleImageError){handleImageError(this, ${JSON.stringify(species?.backup_image_urls || [])});}else{this.style.display='none';this.nextElementSibling.style.display='block';}">
                     <div class="hidden w-full h-32 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center">
                         <i class="fas fa-seedling text-white text-2xl"></i>
                     </div>
@@ -602,7 +602,7 @@ function createNasaInvasivePopup(location) {
                     <img src="${speciesImage}" 
                          alt="${location.species_name}" 
                          class="w-full h-32 object-cover rounded-lg"
-                         onerror="handleImageError(this, ${JSON.stringify(matchingSpecies?.backup_image_urls || [])})">
+                         onerror="if(window.handleImageError){handleImageError(this, ${JSON.stringify(matchingSpecies?.backup_image_urls || [])});}else{this.style.display='none';this.nextElementSibling.style.display='block';}">
                     <div class="hidden w-full h-32 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center">
                         <i class="fas fa-satellite text-white text-2xl"></i>
                     </div>

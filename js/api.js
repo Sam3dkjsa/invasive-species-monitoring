@@ -410,10 +410,10 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Forest', 'Grassland', 'Urban'],
                     identification_features: 'Small flowers in clusters, rough leaves, black berries',
                     control_methods: 'Mechanical removal, herbicide treatment',
-                    image_url: 'https://images.unsplash.com/photo-1595276347278-4b1e43b49c6a?w=400&h=300&fit=crop&auto=format',
+                    image_url: 'https://picsum.photos/400/300?random=1',
                     backup_image_urls: [
-                        'https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Lantana_camara_-_Flickr_-_Dick_Culbert.jpg/400px-Lantana_camara_-_Flickr_-_Dick_Culbert.jpg',
-                        'https://cdn.pixabay.com/photo/2016/08/11/08/04/lantana-1585420_960_720.jpg'
+                        'https://via.placeholder.com/400x300/90EE90/000000?text=Lantana',
+                        'https://dummyimage.com/400x300/90EE90/000000&text=Lantana+camara'
                     ]
                 },
                 {
@@ -427,10 +427,10 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Forest', 'Riparian'],
                     identification_features: 'Large three-leaflet compound leaves, purple flowers',
                     control_methods: 'Persistent cutting, grazing, herbicide',
-                    image_url: 'https://images.unsplash.com/photo-1589481169991-5a0c5d4dffa2?w=400&h=300&fit=crop&auto=format',
+                    image_url: 'https://picsum.photos/400/300?random=2',
                     backup_image_urls: [
-                        'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Kudzu_on_trees_in_Atlanta%2C_Georgia.jpg/400px-Kudzu_on_trees_in_Atlanta%2C_Georgia.jpg',
-                        'https://cdn.pixabay.com/photo/2018/09/12/14/14/kudzu-3672436_960_720.jpg'
+                        'https://via.placeholder.com/400x300/228B22/FFFFFF?text=Kudzu',
+                        'https://dummyimage.com/400x300/228B22/FFFFFF&text=Pueraria+montana'
                     ]
                 },
                 {
@@ -444,7 +444,11 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Riparian', 'Wetland'],
                     identification_features: 'Scale-like leaves, pink flowers, feathery appearance',
                     control_methods: 'Cutting and herbicide treatment',
-                    image_url: 'https://images.unsplash.com/photo-1524239850471-f1f5b4ef7012?w=400&h=300&fit=crop&auto=format'
+                    image_url: 'https://picsum.photos/400/300?random=3',
+                    backup_image_urls: [
+                        'https://via.placeholder.com/400x300/FFB6C1/000000?text=Saltcedar',
+                        'https://dummyimage.com/400x300/FFB6C1/000000&text=Tamarix'
+                    ]
                 },
                 {
                     id: '4',
@@ -457,7 +461,7 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Wetland', 'Riparian'],
                     identification_features: 'Purple flower spikes, lance-shaped leaves, square stems',
                     control_methods: 'Hand pulling, cutting, biological control',
-                    image_url: 'https://images.unsplash.com/photo-1563789031959-4c02c61fcccd?w=400&h=300&fit=crop&auto=format'
+                    image_url: 'https://picsum.photos/400/300?random=4'
                 },
                 {
                     id: '5',
@@ -470,7 +474,7 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Riparian', 'Urban', 'Forest'],
                     identification_features: 'Hollow stems, heart-shaped leaves, bamboo-like appearance',
                     control_methods: 'Repeated cutting, herbicide injection, excavation',
-                    image_url: 'https://images.unsplash.com/photo-1588068738853-84030b1c5bc1?w=400&h=300&fit=crop&auto=format'
+                    image_url: 'https://picsum.photos/400/300?random=5'
                 },
                 {
                     id: '6',
@@ -483,7 +487,7 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Grassland', 'Desert'],
                     identification_features: 'Drooping seed heads, soft hairy leaves, reddish color when dry',
                     control_methods: 'Targeted grazing, herbicide, revegetation',
-                    image_url: 'https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=400&h=300&fit=crop&auto=format'
+                    image_url: 'https://picsum.photos/400/300?random=6'
                 },
                 {
                     id: '7',
@@ -496,7 +500,7 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Grassland', 'Desert'],
                     identification_features: 'White to pink flowers, deeply divided leaves, spiny bracts',
                     control_methods: 'Biological control, herbicide, hand removal',
-                    image_url: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=300&fit=crop&auto=format'
+                    image_url: 'https://picsum.photos/400/300?random=7'
                 },
                 {
                     id: '8',
@@ -509,7 +513,7 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Forest', 'Grassland'],
                     identification_features: 'Bright yellow flowers, green ridged stems, small leaves',
                     control_methods: 'Cutting before seed set, herbicide, hand pulling young plants',
-                    image_url: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop&auto=format'
+                    image_url: 'https://picsum.photos/400/300?random=8'
                 },
                 {
                     id: '9',
@@ -522,7 +526,7 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Riparian', 'Wetland'],
                     identification_features: 'Silvery leaves, fragrant yellow flowers, olive-like fruits',
                     control_methods: 'Cutting and treating stumps, herbicide',
-                    image_url: 'https://images.unsplash.com/photo-1601004890684-d8cbf643f5f2?w=400&h=300&fit=crop&auto=format'
+                    image_url: 'https://picsum.photos/400/300?random=9'
                 },
                 {
                     id: '10',
@@ -535,7 +539,7 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Grassland', 'Forest'],
                     identification_features: 'Yellow-green flower bracts, narrow leaves, milky sap',
                     control_methods: 'Biological control, herbicide, grazing management',
-                    image_url: 'https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=400&h=300&fit=crop&auto=format'
+                    image_url: 'https://picsum.photos/400/300?random=10'
                 },
                 {
                     id: '11',
@@ -548,7 +552,7 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Forest', 'Urban'],
                     identification_features: 'Lobed leaves, climbing or trailing habit, dark berries',
                     control_methods: 'Hand removal, cutting, herbicide treatment',
-                    image_url: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop&auto=format'
+                    image_url: 'https://picsum.photos/400/300?random=11'
                 },
                 {
                     id: '12',
@@ -561,7 +565,7 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Forest', 'Urban'],
                     identification_features: 'Heart-shaped serrated leaves, white four-petaled flowers, garlic odor',
                     control_methods: 'Hand pulling, cutting before seed set',
-                    image_url: 'https://images.unsplash.com/photo-1588436706487-9d55d73a39e3?w=400&h=300&fit=crop&auto=format'
+                    image_url: 'https://picsum.photos/400/300?random=12'
                 },
                 {
                     id: '13',
@@ -574,7 +578,7 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Wetland'],
                     identification_features: 'Three-leaf clusters, chain-like pattern of hairs on leaves',
                     control_methods: 'Mechanical removal, herbicide, biological control',
-                    image_url: 'https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400&h=300&fit=crop&auto=format'
+                    image_url: 'https://picsum.photos/400/300?random=13'
                 }
             ],
             reports: [

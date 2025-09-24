@@ -1,5 +1,40 @@
 // Main JavaScript functionality for Invasive Plant Species Monitoring System
 
+// Initialize essential functions immediately to prevent errors
+(function() {
+    // Handle image loading errors with backup URLs - Simple and safe version
+    function handleImageError(img, backupUrls = []) {
+        try {
+            // Safety check for img element
+            if (!img || !img.style) return;
+            
+            // Try backup URLs first
+            if (backupUrls && Array.isArray(backupUrls) && backupUrls.length > 0) {
+                const nextUrl = backupUrls.shift();
+                img.onerror = function() {
+                    handleImageError(img, backupUrls);
+                };
+                img.src = nextUrl;
+            } else {
+                // No more backup URLs, show fallback
+                img.style.display = 'none';
+                if (img.nextElementSibling) {
+                    img.nextElementSibling.style.display = 'flex';
+                }
+            }
+        } catch (error) {
+            console.warn('Image error handler failed:', error);
+            // Last resort fallback
+            if (img && img.style) {
+                img.style.display = 'none';
+            }
+        }
+    }
+    
+    // Make function globally available immediately
+    window.handleImageError = handleImageError;
+})();
+
 // Global variables
 let currentSection = 'dashboard';
 let currentPage = 1;
@@ -362,7 +397,7 @@ function displaySpecies(species) {
                 <img src="${s.image_url || 'https://picsum.photos/400/300?random=' + s.id}" 
                      alt="${s.scientific_name}" 
                      class="w-full h-full object-cover"
-                     onerror="handleImageError(this, ${JSON.stringify(s.backup_image_urls || [])})">
+                     onerror="if(window.handleImageError){handleImageError(this, ${JSON.stringify(s.backup_image_urls || [])});}else{this.style.display='none';this.nextElementSibling.style.display='flex';}">
                 <div class="hidden w-full h-full bg-gradient-to-br from-green-400 to-green-600 items-center justify-center">
                     <i class="fas fa-seedling text-white text-4xl"></i>
                 </div>
@@ -836,24 +871,6 @@ function formatDate(dateString) {
         month: 'short', 
         day: 'numeric' 
     });
-}
-
-// Handle image loading errors with backup URLs
-function handleImageError(img, backupUrls = []) {
-    // Try backup URLs first
-    if (backupUrls && backupUrls.length > 0) {
-        const nextUrl = backupUrls.shift();
-        img.onerror = function() {
-            handleImageError(img, backupUrls);
-        };
-        img.src = nextUrl;
-    } else {
-        // No more backup URLs, show fallback
-        img.style.display = 'none';
-        if (img.nextElementSibling) {
-            img.nextElementSibling.style.display = 'flex';
-        }
-    }
 }
 
 function getStatusColor(status) {
