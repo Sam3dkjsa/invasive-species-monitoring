@@ -127,14 +127,136 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set up event listeners
     setupEventListeners();
     
-    // Check if user is logged in, if not show login
-    if (!currentUser) {
-        showLoginScreen();
-    } else {
-        // Load initial data only if user is logged in
-        loadDashboardData();
-    }
+    // Check for existing login session first
+    checkExistingLogin();
 });
+
+// Check for existing login session in localStorage
+function checkExistingLogin() {
+    try {
+        const savedUser = localStorage.getItem('ipsms_user');
+        const sessionExpiry = localStorage.getItem('ipsms_session_expiry');
+        
+        if (savedUser && sessionExpiry) {
+            const now = new Date().getTime();
+            const expiryTime = parseInt(sessionExpiry);
+            
+            // Check if session is still valid (24 hours)
+            if (now < expiryTime) {
+                const user = JSON.parse(savedUser);
+                currentUser = user;
+                invasiveSpeciesAPI.currentUser = user;
+                
+                console.log('Restored user session:', user.full_name);
+                
+                // Show main content and update UI
+                showMainContent();
+                updateLoginState(user);
+                
+                // Load dashboard by default
+                showSection('dashboard');
+                
+                showSuccess(`Welcome back, ${user.full_name}!`);
+                return;
+            } else {
+                // Session expired, clear localStorage
+                clearUserSession();
+                console.log('User session expired');
+            }
+        }
+    } catch (error) {
+        console.error('Error checking existing login:', error);
+        clearUserSession();
+    }
+    
+    // No valid session found, show login screen
+    showLoginScreen();
+}
+
+// Save user session to localStorage
+function saveUserSession(user) {
+    try {
+        const now = new Date().getTime();
+        const expiryTime = now + (24 * 60 * 60 * 1000); // 24 hours
+        
+        localStorage.setItem('ipsms_user', JSON.stringify(user));
+        localStorage.setItem('ipsms_session_expiry', expiryTime.toString());
+        localStorage.setItem('ipsms_login_time', now.toString());
+        
+        console.log('User session saved to localStorage');
+    } catch (error) {
+        console.error('Error saving user session:', error);
+    }
+}
+
+// Clear user session from localStorage
+function clearUserSession() {
+    try {
+        localStorage.removeItem('ipsms_user');
+        localStorage.removeItem('ipsms_session_expiry');
+        localStorage.removeItem('ipsms_login_time');
+        
+        console.log('User session cleared from localStorage');
+    } catch (error) {
+        console.error('Error clearing user session:', error);
+    }
+}
+
+// Refresh user session to extend expiry time
+function refreshUserSession() {
+    if (currentUser) {
+        const now = new Date().getTime();
+        const expiryTime = now + (24 * 60 * 60 * 1000); // Extend by 24 hours
+        
+        try {
+            localStorage.setItem('ipsms_session_expiry', expiryTime.toString());
+            console.log('User session refreshed');
+        } catch (error) {
+            console.error('Error refreshing user session:', error);
+        }
+    }
+}
+
+// Setup session refresh on user activity
+function setupSessionRefresh() {
+    // Refresh session every 30 minutes of activity
+    let lastActivity = Date.now();
+    
+    // Track user activity
+    const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+    
+    activityEvents.forEach(event => {
+        document.addEventListener(event, function() {
+            const now = Date.now();
+            
+            // If user has been inactive for more than 30 minutes, refresh session
+            if (currentUser && (now - lastActivity) > (30 * 60 * 1000)) {
+                refreshUserSession();
+            }
+            
+            lastActivity = now;
+        }, true);
+    });
+    
+    // Check session validity every 5 minutes
+    setInterval(function() {
+        if (currentUser) {
+            const sessionExpiry = localStorage.getItem('ipsms_session_expiry');
+            
+            if (sessionExpiry) {
+                const now = new Date().getTime();
+                const expiryTime = parseInt(sessionExpiry);
+                
+                // If session expired, auto-logout
+                if (now >= expiryTime) {
+                    console.log('Session expired, logging out user');
+                    showError('Your session has expired. Please log in again.');
+                    logout();
+                }
+            }
+        }
+    }, 5 * 60 * 1000); // Check every 5 minutes
+}
 
 // Initialize the application
 function initializeApp() {
@@ -145,6 +267,9 @@ function initializeApp() {
     
     // Initialize user permissions (hide restricted features by default)
     updateVerificationPermissions(null);
+    
+    // Setup session refresh and monitoring
+    setupSessionRefresh();
     
     // Initialize Tailwind config
     tailwind.config = {
@@ -617,6 +742,9 @@ async function handleLogin(event) {
         const user = await invasiveSpeciesAPI.authenticateUser(email, name, userType);
         currentUser = user;
         
+        // Save user session to localStorage for persistence
+        saveUserSession(user);
+        
         showSuccess(`Welcome, ${user.full_name}!`);
         hideLoginScreen();
         
@@ -643,6 +771,7 @@ function updateLoginState(user) {
         loginButton.innerHTML = `
             <i class="fas fa-user mr-2"></i>${user.full_name}
             <span class="text-xs block">${user.user_type}</span>
+            <span class="text-xs text-green-500">● Online</span>
         `;
         loginButton.onclick = showUserMenu;
     }
@@ -760,6 +889,9 @@ function showUserMenu() {
 function logout() {
     currentUser = null;
     invasiveSpeciesAPI.logout();
+    
+    // Clear persistent session
+    clearUserSession();
     
     // Hide all main content and show login screen
     hideMainContent();
