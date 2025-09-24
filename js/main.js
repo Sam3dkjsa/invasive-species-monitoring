@@ -119,73 +119,235 @@ let speciesData = [];
 let reportsData = [];
 let currentUser = null;
 
-// DOM Content Loaded Event
+// DOM Content Loaded Event - Enhanced for online mode
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('=== IPSMS INITIALIZATION FOR ONLINE MODE ===');
+    console.log('DOM Content Loaded - Environment:', {
+        protocol: window.location.protocol,
+        host: window.location.host,
+        origin: window.location.origin,
+        readyState: document.readyState
+    });
+    
     // Initialize the application
     initializeApp();
     
     // Set up event listeners
     setupEventListeners();
     
-    // Check for existing login session first
-    checkExistingLogin();
+    // Enhanced session check with delay for online mode
+    setTimeout(() => {
+        console.log('Starting delayed session check for online mode...');
+        checkExistingLogin();
+    }, 300);
+});
+
+// Additional initialization strategies for online mode compatibility
+if (document.readyState === 'loading') {
+    console.log('Document still loading, waiting for DOMContentLoaded...');
+} else {
+    console.log('Document already loaded, initializing immediately for online mode...');
+    
+    // Immediate initialization for already-loaded documents
+    setTimeout(() => {
+        initializeApp();
+        setupEventListeners();
+        checkExistingLogin();
+    }, 100);
+}
+
+// Fallback window load event for online mode
+window.addEventListener('load', function() {
+    console.log('Window load event - Backup initialization for online mode...');
+    
+    // Only run if not already initialized
+    if (!window.ipsmsInitialized) {
+        setTimeout(() => {
+            initializeApp();
+            setupEventListeners();
+            checkExistingLogin();
+            window.ipsmsInitialized = true;
+        }, 200);
+    }
 });
 
 // Check for existing login session in localStorage
 function checkExistingLogin() {
+    console.log('=== ONLINE MODE SESSION CHECK ===');
+    console.log('Environment:', {
+        origin: window.location.origin,
+        protocol: window.location.protocol,
+        storageSupported: typeof(Storage) !== "undefined",
+        documentReady: document.readyState
+    });
+    
     try {
         const savedUser = localStorage.getItem('ipsms_user');
         const sessionExpiry = localStorage.getItem('ipsms_session_expiry');
+        
+        console.log('Checking existing login...', { 
+            savedUser: !!savedUser, 
+            sessionExpiry,
+            fullUserData: savedUser ? JSON.parse(savedUser) : null
+        });
         
         if (savedUser && sessionExpiry) {
             const now = new Date().getTime();
             const expiryTime = parseInt(sessionExpiry);
             
+            console.log('Session check:', { now, expiryTime, valid: now < expiryTime });
+            
             // Check if session is still valid (24 hours)
             if (now < expiryTime) {
                 const user = JSON.parse(savedUser);
                 currentUser = user;
-                invasiveSpeciesAPI.currentUser = user;
                 
-                console.log('Restored user session:', user.full_name);
+                // Set the user in the API as well
+                if (invasiveSpeciesAPI) {
+                    invasiveSpeciesAPI.currentUser = user;
+                }
                 
-                // Show main content and update UI
-                showMainContent();
-                updateLoginState(user);
+                console.log('Restored user session for online mode:', user.full_name);
                 
-                // Load dashboard by default
-                showSection('dashboard');
+                // Enhanced DOM readiness check for online mode
+                const restoreSession = () => {
+                    console.log('Executing session restoration...');
+                    
+                    // Show main content and update UI
+                    showMainContent();
+                    updateLoginState(user);
+                    
+                    // Load dashboard by default
+                    showSection('dashboard');
+                    
+                    showSuccess(`Welcome back, ${user.full_name}!`);
+                    
+                    console.log('Session restoration completed for online mode');
+                };
                 
-                showSuccess(`Welcome back, ${user.full_name}!`);
-                return;
+                // Multiple strategies to ensure proper timing in online mode
+                if (document.readyState === 'complete') {
+                    console.log('Document ready, restoring session immediately...');
+                    setTimeout(restoreSession, 200);
+                } else if (document.readyState === 'interactive') {
+                    console.log('Document interactive, restoring session soon...');
+                    setTimeout(restoreSession, 300);
+                } else {
+                    console.log('Document loading, waiting for ready state...');
+                    document.addEventListener('DOMContentLoaded', () => {
+                        setTimeout(restoreSession, 200);
+                    });
+                    // Fallback for online mode
+                    setTimeout(restoreSession, 800);
+                }
+                
+                return true;
             } else {
                 // Session expired, clear localStorage
                 clearUserSession();
-                console.log('User session expired');
+                console.log('User session expired in online mode');
             }
+        } else {
+            console.log('No saved session found in online mode');
         }
     } catch (error) {
-        console.error('Error checking existing login:', error);
+        console.error('Error checking existing login in online mode:', error);
         clearUserSession();
     }
     
     // No valid session found, show login screen
-    showLoginScreen();
+    console.log('Showing login screen for online mode');
+    setTimeout(() => {
+        showLoginScreen();
+    }, 200);
+    
+    return false;
 }
 
-// Save user session to localStorage
+// Save user session to localStorage with enhanced online mode support
 function saveUserSession(user) {
+    console.log('=== SAVING SESSION FOR ONLINE MODE ===');
+    
     try {
         const now = new Date().getTime();
         const expiryTime = now + (24 * 60 * 60 * 1000); // 24 hours
         
+        // Enhanced localStorage availability check for online mode
+        if (typeof Storage === "undefined") {
+            console.error('localStorage is not supported in this browser/online mode');
+            alert('Your browser does not support localStorage. Session persistence will not work.');
+            return false;
+        }
+        
+        // Test localStorage write capability in online mode
+        try {
+            localStorage.setItem('ipsms_test', 'test');
+            localStorage.removeItem('ipsms_test');
+            console.log('localStorage write test passed for online mode');
+        } catch (testError) {
+            console.error('localStorage write test failed for online mode:', testError);
+            return false;
+        }
+        
+        // Save session data
         localStorage.setItem('ipsms_user', JSON.stringify(user));
         localStorage.setItem('ipsms_session_expiry', expiryTime.toString());
         localStorage.setItem('ipsms_login_time', now.toString());
+        localStorage.setItem('ipsms_environment', window.location.origin);
         
-        console.log('User session saved to localStorage');
+        console.log('User session saved to localStorage for online mode:', {
+            user: user.full_name,
+            userType: user.user_type,
+            expiryTime: new Date(expiryTime).toLocaleString(),
+            environment: window.location.origin,
+            protocol: window.location.protocol
+        });
+        
+        // Verify the save worked with enhanced checking
+        const testRead = localStorage.getItem('ipsms_user');
+        const testExpiry = localStorage.getItem('ipsms_session_expiry');
+        
+        if (testRead && testExpiry) {
+            console.log('Session save verification passed for online mode');
+            
+            // Additional verification: parse and validate
+            try {
+                const parsedUser = JSON.parse(testRead);
+                const parsedExpiry = parseInt(testExpiry);
+                
+                if (parsedUser.full_name === user.full_name && parsedExpiry === expiryTime) {
+                    console.log('Session data integrity verified for online mode');
+                    return true;
+                } else {
+                    console.error('Session data integrity check failed for online mode');
+                    return false;
+                }
+            } catch (parseError) {
+                console.error('Session data parse verification failed for online mode:', parseError);
+                return false;
+            }
+        } else {
+            console.error('Session save verification failed for online mode');
+            return false;
+        }
+        
     } catch (error) {
-        console.error('Error saving user session:', error);
+        console.error('Error saving user session for online mode:', error);
+        
+        // Additional error diagnostics for online mode
+        console.log('localStorage diagnostic info:', {
+            storageQuota: navigator.storage ? 'available' : 'unavailable',
+            cookiesEnabled: navigator.cookieEnabled,
+            storageEstimate: navigator.storage ? 'checking...' : 'N/A'
+        });
+        
+        if (navigator.storage && navigator.storage.estimate) {
+            navigator.storage.estimate().then(estimate => {
+                console.log('Storage estimate:', estimate);
+            }).catch(err => console.log('Storage estimate failed:', err));
+        }
+        
+        return false;
     }
 }
 
@@ -210,11 +372,136 @@ function refreshUserSession() {
         
         try {
             localStorage.setItem('ipsms_session_expiry', expiryTime.toString());
-            console.log('User session refreshed');
+            console.log('User session refreshed for online mode');
         } catch (error) {
-            console.error('Error refreshing user session:', error);
+            console.error('Error refreshing user session for online mode:', error);
         }
     }
+}
+
+// Debug function for online mode - callable from browser console
+window.debugIPSMSSession = function() {
+    console.log('=== IPSMS SESSION DEBUG FOR ONLINE MODE ===');
+    
+    // Environment info
+    console.log('Environment:', {
+        origin: window.location.origin,
+        protocol: window.location.protocol,
+        host: window.location.host,
+        pathname: window.location.pathname,
+        userAgent: navigator.userAgent.substring(0, 100) + '...'
+    });
+    
+    // Storage support
+    console.log('Storage Support:', {
+        localStorage: typeof(Storage) !== "undefined",
+        sessionStorage: typeof(sessionStorage) !== "undefined",
+        cookies: navigator.cookieEnabled,
+        storageAPI: !!navigator.storage
+    });
+    
+    // Current session data
+    try {
+        const savedUser = localStorage.getItem('ipsms_user');
+        const sessionExpiry = localStorage.getItem('ipsms_session_expiry');
+        const loginTime = localStorage.getItem('ipsms_login_time');
+        const environment = localStorage.getItem('ipsms_environment');
+        
+        console.log('Stored Session Data:', {
+            hasUser: !!savedUser,
+            hasExpiry: !!sessionExpiry,
+            hasLoginTime: !!loginTime,
+            environment: environment,
+            currentUser: currentUser ? currentUser.full_name : 'None',
+            windowCurrentUser: window.currentUser ? window.currentUser.full_name : 'None'
+        });
+        
+        if (savedUser && sessionExpiry) {
+            const user = JSON.parse(savedUser);
+            const now = new Date().getTime();
+            const expiryTime = parseInt(sessionExpiry);
+            const loginTimeMs = parseInt(loginTime);
+            
+            console.log('Session Details:', {
+                username: user.full_name,
+                userType: user.user_type,
+                email: user.email,
+                loginTime: new Date(loginTimeMs).toLocaleString(),
+                expiryTime: new Date(expiryTime).toLocaleString(),
+                currentTime: new Date(now).toLocaleString(),
+                isValid: now < expiryTime,
+                timeRemaining: expiryTime - now,
+                timeRemainingHours: Math.round((expiryTime - now) / (1000 * 60 * 60) * 100) / 100
+            });
+        }
+        
+    } catch (error) {
+        console.error('Error reading session data:', error);
+    }
+    
+    // DOM elements
+    const loginButton = document.querySelector('button[onclick="showLogin()"]') || 
+                       document.querySelector('button[onclick="showLoginScreen()"]') ||
+                       document.querySelector('.login-button') ||
+                       document.querySelector('#loginBtn');
+    
+    console.log('UI Elements:', {
+        loginButtonFound: !!loginButton,
+        loginButtonText: loginButton ? loginButton.textContent.trim() : 'N/A',
+        loginButtonOnclick: loginButton ? loginButton.onclick?.toString().substring(0, 100) : 'N/A',
+        totalButtons: document.querySelectorAll('button').length
+    });
+    
+    // Test localStorage functionality
+    try {
+        const testKey = 'ipsms_debug_test_' + Date.now();
+        const testValue = 'test_value_' + Math.random();
+        
+        localStorage.setItem(testKey, testValue);
+        const retrieved = localStorage.getItem(testKey);
+        localStorage.removeItem(testKey);
+        
+        console.log('localStorage Test:', {
+            writeTest: 'passed',
+            readTest: retrieved === testValue ? 'passed' : 'failed',
+            testValue: testValue,
+            retrievedValue: retrieved
+        });
+        
+    } catch (testError) {
+        console.error('localStorage Test Failed:', testError);
+    }
+    
+    console.log('=== END DEBUG ===');
+    
+    // Return session restore function for manual testing
+    return {
+        restoreSession: function() {
+            console.log('Manually triggering session restore...');
+            checkExistingLogin();
+        },
+        clearSession: function() {
+            console.log('Manually clearing session...');
+            clearUserSession();
+        },
+        forceLogin: function(username = 'test_user') {
+            console.log('Forcing mock login for testing...');
+            const mockUser = {
+                id: 'test_123',
+                username: username,
+                full_name: 'Test User',
+                email: 'test@example.com',
+                user_type: 'Researcher'
+            };
+            saveUserSession(mockUser);
+            checkExistingLogin();
+        }
+    };
+};
+
+// Auto-run debug on script load in online mode
+if (window.location.protocol === 'https:' || window.location.hostname !== 'localhost') {
+    console.log('IPSMS Online Mode Detected - Debug function available as window.debugIPSMSSession()');
 }
 
 // Setup session refresh on user activity
@@ -739,11 +1026,18 @@ async function handleLogin(event) {
         const name = document.getElementById('login-name').value;
         const userType = document.getElementById('login-user-type').value;
         
+        console.log('Attempting login for:', { email, name, userType });
+        
         const user = await invasiveSpeciesAPI.authenticateUser(email, name, userType);
         currentUser = user;
         
+        console.log('Login successful:', user);
+        
         // Save user session to localStorage for persistence
-        saveUserSession(user);
+        const sessionSaved = saveUserSession(user);
+        if (!sessionSaved) {
+            console.warn('Failed to save session, but continuing with login');
+        }
         
         showSuccess(`Welcome, ${user.full_name}!`);
         hideLoginScreen();
@@ -763,23 +1057,79 @@ async function handleLogin(event) {
     }
 }
 
-// Update UI for logged-in user
+// Update UI for logged-in user with enhanced online mode support
 function updateLoginState(user) {
-    // Update login button to show user info
-    const loginButton = document.querySelector('button[onclick="showLogin()"]');
-    if (loginButton) {
-        loginButton.innerHTML = `
-            <i class="fas fa-user mr-2"></i>${user.full_name}
-            <span class="text-xs block">${user.user_type}</span>
-            <span class="text-xs text-green-500">● Online</span>
-        `;
-        loginButton.onclick = showUserMenu;
+    console.log('=== UPDATING LOGIN STATE FOR ONLINE MODE ===');
+    console.log('User:', user.full_name, 'Type:', user.user_type);
+    
+    // Update login button to show user info - enhanced for online mode
+    function updateLoginButton(attempts = 0) {
+        const maxAttempts = 20; // Increased for online mode
+        
+        // Enhanced selector strategy for online mode
+        const loginButton = document.querySelector('button[onclick="showLogin()"]') || 
+                           document.querySelector('button[onclick="showLoginScreen()"]') ||
+                           document.querySelector('.login-button') ||
+                           document.querySelector('#loginBtn') ||
+                           document.querySelector('[data-login-btn]') ||
+                           document.querySelector('button:contains("Login")');
+        
+        console.log(`Login button search attempt ${attempts + 1}/${maxAttempts}:`, {
+            found: !!loginButton,
+            element: loginButton?.tagName,
+            onclick: loginButton?.onclick?.toString(),
+            className: loginButton?.className
+        });
+        
+        if (loginButton) {
+            console.log('Updating login button for online mode...');
+            
+            loginButton.innerHTML = `
+                <i class="fas fa-user mr-2"></i>${user.full_name}
+                <span class="text-xs block">${user.user_type}</span>
+                <span class="text-xs text-green-500">● Online</span>
+            `;
+            
+            // Update click handler for user menu
+            loginButton.onclick = function(e) {
+                e.preventDefault();
+                showUserMenu();
+            };
+            
+            // Add logged-in class for styling
+            loginButton.classList.add('logged-in-user');
+            
+            console.log('Login button updated successfully for online mode');
+            return true;
+        } else if (attempts < maxAttempts) {
+            // Enhanced retry strategy for online mode
+            const delay = attempts < 10 ? 150 : 300;
+            setTimeout(() => updateLoginButton(attempts + 1), delay);
+        } else {
+            console.error('Could not find login button after', maxAttempts, 'attempts in online mode');
+            console.log('Available buttons for debugging:', 
+                Array.from(document.querySelectorAll('button')).map(btn => ({
+                    text: btn.textContent?.trim(),
+                    onclick: btn.onclick?.toString(),
+                    id: btn.id,
+                    className: btn.className
+                }))
+            );
+        }
+        
+        return false;
     }
+    
+    updateLoginButton();
     
     // Show/hide verification features based on user permissions
     updateVerificationPermissions(user);
     
-    console.log('User logged in:', user);
+    // Store user globally for online mode access
+    window.currentUser = user;
+    window.dispatchEvent(new CustomEvent('userStateUpdated', { detail: user }));
+    
+    console.log('User logged in for online mode:', user);
 }
 
 // Check if user has verification permissions
