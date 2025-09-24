@@ -2,37 +2,114 @@
 
 // Initialize essential functions immediately to prevent errors
 (function() {
-    // Handle image loading errors with backup URLs - Simple and safe version
+    // Enhanced image error handling with improved reliability
     function handleImageError(img, backupUrls = []) {
         try {
             // Safety check for img element
-            if (!img || !img.style) return;
+            if (!img || !img.style || !img.parentNode) {
+                console.warn('Invalid image element for error handling');
+                return;
+            }
+            
+            // Prevent infinite loop by tracking attempts
+            if (!img.dataset.errorAttempts) {
+                img.dataset.errorAttempts = '0';
+            }
+            
+            const attempts = parseInt(img.dataset.errorAttempts);
+            if (attempts >= 5) {
+                console.warn('Max image loading attempts reached, showing fallback');
+                showImageFallback(img);
+                return;
+            }
+            
+            img.dataset.errorAttempts = (attempts + 1).toString();
             
             // Try backup URLs first
             if (backupUrls && Array.isArray(backupUrls) && backupUrls.length > 0) {
                 const nextUrl = backupUrls.shift();
+                console.log(`Trying backup image URL (attempt ${attempts + 1}):`, nextUrl);
+                
                 img.onerror = function() {
                     handleImageError(img, backupUrls);
                 };
                 img.src = nextUrl;
             } else {
                 // No more backup URLs, show fallback
-                img.style.display = 'none';
-                if (img.nextElementSibling) {
-                    img.nextElementSibling.style.display = 'flex';
-                }
+                showImageFallback(img);
             }
         } catch (error) {
             console.warn('Image error handler failed:', error);
-            // Last resort fallback
-            if (img && img.style) {
-                img.style.display = 'none';
-            }
+            showImageFallback(img);
         }
     }
     
-    // Make function globally available immediately
+    // Show image fallback with gradient background
+    function showImageFallback(img) {
+        try {
+            if (img && img.style) {
+                img.style.display = 'none';
+                
+                // Find and show the fallback element
+                let fallbackElement = img.nextElementSibling;
+                if (fallbackElement) {
+                    if (fallbackElement.classList.contains('hidden')) {
+                        fallbackElement.classList.remove('hidden');
+                    }
+                    fallbackElement.style.display = 'flex';
+                } else {
+                    // Create fallback if it doesn't exist
+                    fallbackElement = document.createElement('div');
+                    fallbackElement.className = 'w-full h-32 bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center rounded-lg';
+                    fallbackElement.innerHTML = '<i class="fas fa-seedling text-white text-2xl"></i>';
+                    img.parentNode.insertBefore(fallbackElement, img.nextSibling);
+                }
+            }
+        } catch (error) {
+            console.warn('Failed to show image fallback:', error);
+        }
+    }
+    
+    // Make functions globally available immediately
     window.handleImageError = handleImageError;
+    window.showImageFallback = showImageFallback;
+    
+    // Preload and validate image URL
+    function preloadImage(url) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(url);
+            img.onerror = () => reject(url);
+            img.src = url;
+            
+            // Timeout after 10 seconds
+            setTimeout(() => reject(url), 10000);
+        });
+    }
+    
+    // Get best available image URL from a species object
+    async function getBestImageUrl(species) {
+        const urls = [species.image_url, ...(species.backup_image_urls || [])];
+        
+        for (const url of urls) {
+            if (url) {
+                try {
+                    await preloadImage(url);
+                    return url;
+                } catch (e) {
+                    console.log('Image URL failed preload test:', url);
+                }
+            }
+        }
+        
+        // All URLs failed, return a reliable fallback
+        return `https://via.placeholder.com/400x300/90EE90/000000?text=${encodeURIComponent(species.scientific_name || 'Plant')}`;
+    }
+    
+    window.preloadImage = preloadImage;
+    window.getBestImageUrl = getBestImageUrl;
+    
+    console.log('Image error handling system initialized');
 })();
 
 // Global variables

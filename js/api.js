@@ -461,7 +461,11 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Wetland', 'Riparian'],
                     identification_features: 'Purple flower spikes, lance-shaped leaves, square stems',
                     control_methods: 'Hand pulling, cutting, biological control',
-                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Lythrum_salicaria_-_purple_loosestrife_02.jpg/400px-Lythrum_salicaria_-_purple_loosestrife_02.jpg'
+                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Lythrum_salicaria_-_purple_loosestrife_02.jpg/400px-Lythrum_salicaria_-_purple_loosestrife_02.jpg',
+                    backup_image_urls: [
+                        'https://picsum.photos/400/300?random=4',
+                        'https://via.placeholder.com/400x300/9370DB/FFFFFF?text=Purple+Loosestrife'
+                    ]
                 },
                 {
                     id: '5',
@@ -474,7 +478,11 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Riparian', 'Urban', 'Forest'],
                     identification_features: 'Hollow stems, heart-shaped leaves, bamboo-like appearance',
                     control_methods: 'Repeated cutting, herbicide injection, excavation',
-                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Fallopia_japonica_flowers.jpg/400px-Fallopia_japonica_flowers.jpg'
+                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Fallopia_japonica_flowers.jpg/400px-Fallopia_japonica_flowers.jpg',
+                    backup_image_urls: [
+                        'https://picsum.photos/400/300?random=5',
+                        'https://via.placeholder.com/400x300/32CD32/000000?text=Japanese+Knotweed'
+                    ]
                 },
                 {
                     id: '6',
@@ -487,7 +495,11 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Grassland', 'Desert'],
                     identification_features: 'Drooping seed heads, soft hairy leaves, reddish color when dry',
                     control_methods: 'Targeted grazing, herbicide, revegetation',
-                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Bromus_tectorum_cheatgrass.jpg/400px-Bromus_tectorum_cheatgrass.jpg'
+                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Bromus_tectorum_cheatgrass.jpg/400px-Bromus_tectorum_cheatgrass.jpg',
+                    backup_image_urls: [
+                        'https://picsum.photos/400/300?random=6',
+                        'https://via.placeholder.com/400x300/D2691E/FFFFFF?text=Cheatgrass'
+                    ]
                 },
                 {
                     id: '7',
@@ -500,7 +512,11 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Grassland', 'Desert'],
                     identification_features: 'White to pink flowers, deeply divided leaves, spiny bracts',
                     control_methods: 'Biological control, herbicide, hand removal',
-                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Centaurea_diffusa_flower.jpg/400px-Centaurea_diffusa_flower.jpg'
+                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Centaurea_diffusa_flower.jpg/400px-Centaurea_diffusa_flower.jpg',
+                    backup_image_urls: [
+                        'https://picsum.photos/400/300?random=7',
+                        'https://via.placeholder.com/400x300/FFC0CB/000000?text=Knapweed'
+                    ]
                 },
                 {
                     id: '8',
@@ -513,7 +529,11 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Forest', 'Grassland'],
                     identification_features: 'Bright yellow flowers, green ridged stems, small leaves',
                     control_methods: 'Cutting before seed set, herbicide, hand pulling young plants',
-                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Cytisus_scoparius_flowers.jpg/400px-Cytisus_scoparius_flowers.jpg'
+                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Cytisus_scoparius_flowers.jpg/400px-Cytisus_scoparius_flowers.jpg',
+                    backup_image_urls: [
+                        'https://picsum.photos/400/300?random=8',
+                        'https://via.placeholder.com/400x300/FFD700/000000?text=Scotch+Broom'
+                    ]
                 },
                 {
                     id: '9',
@@ -526,7 +546,11 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Riparian', 'Wetland'],
                     identification_features: 'Silvery leaves, fragrant yellow flowers, olive-like fruits',
                     control_methods: 'Cutting and treating stumps, herbicide',
-                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Elaeagnus_angustifolia_flowers.jpg/400px-Elaeagnus_angustifolia_flowers.jpg'
+                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Elaeagnus_angustifolia_flowers.jpg/400px-Elaeagnus_angustifolia_flowers.jpg',
+                    backup_image_urls: [
+                        'https://picsum.photos/400/300?random=9',
+                        'https://via.placeholder.com/400x300/C0C0C0/000000?text=Russian+Olive'
+                    ]
                 },
                 {
                     id: '10',
@@ -539,7 +563,11 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Grassland', 'Forest'],
                     identification_features: 'Yellow-green flower bracts, narrow leaves, milky sap',
                     control_methods: 'Biological control, herbicide, grazing management',
-                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Euphorbia_esula_flowers.jpg/400px-Euphorbia_esula_flowers.jpg'
+                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Euphorbia_esula_flowers.jpg/400px-Euphorbia_esula_flowers.jpg',
+                    backup_image_urls: [
+                        'https://picsum.photos/400/300?random=10',
+                        'https://via.placeholder.com/400x300/ADFF2F/000000?text=Leafy+Spurge'
+                    ]
                 },
                 {
                     id: '11',
@@ -552,7 +580,11 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Forest', 'Urban'],
                     identification_features: 'Lobed leaves, climbing or trailing habit, dark berries',
                     control_methods: 'Hand removal, cutting, herbicide treatment',
-                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Hedera_helix_berries.jpg/400px-Hedera_helix_berries.jpg'
+                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Hedera_helix_berries.jpg/400px-Hedera_helix_berries.jpg',
+                    backup_image_urls: [
+                        'https://picsum.photos/400/300?random=11',
+                        'https://via.placeholder.com/400x300/228B22/FFFFFF?text=English+Ivy'
+                    ]
                 },
                 {
                     id: '12',
@@ -565,7 +597,11 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Forest', 'Urban'],
                     identification_features: 'Heart-shaped serrated leaves, white four-petaled flowers, garlic odor',
                     control_methods: 'Hand pulling, cutting before seed set',
-                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Alliaria_petiolata_flowers.jpg/400px-Alliaria_petiolata_flowers.jpg'
+                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Alliaria_petiolata_flowers.jpg/400px-Alliaria_petiolata_flowers.jpg',
+                    backup_image_urls: [
+                        'https://picsum.photos/400/300?random=12',
+                        'https://via.placeholder.com/400x300/F5F5F5/000000?text=Garlic+Mustard'
+                    ]
                 },
                 {
                     id: '13',
@@ -578,7 +614,11 @@ class InvasiveSpeciesAPI {
                     habitat_types: ['Wetland'],
                     identification_features: 'Three-leaf clusters, chain-like pattern of hairs on leaves',
                     control_methods: 'Mechanical removal, herbicide, biological control',
-                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Salvinia_molesta_floating.jpg/400px-Salvinia_molesta_floating.jpg'
+                    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Salvinia_molesta_floating.jpg/400px-Salvinia_molesta_floating.jpg',
+                    backup_image_urls: [
+                        'https://picsum.photos/400/300?random=13',
+                        'https://via.placeholder.com/400x300/00CED1/000000?text=Giant+Salvinia'
+                    ]
                 }
             ],
             reports: [
