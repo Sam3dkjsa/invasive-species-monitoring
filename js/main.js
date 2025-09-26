@@ -295,6 +295,9 @@ function saveUserSession(user) {
         localStorage.setItem('ipsms_login_time', now.toString());
         localStorage.setItem('ipsms_environment', window.location.origin);
         
+        // Track user login for admin dashboard
+        trackUserLogin(user, now);
+        
         console.log('User session saved to localStorage for online mode:', {
             user: user.full_name,
             userType: user.user_type,
@@ -354,6 +357,11 @@ function saveUserSession(user) {
 // Clear user session from localStorage
 function clearUserSession() {
     try {
+        // Track user logout for admin dashboard
+        if (currentUser) {
+            trackUserLogout(currentUser, new Date().getTime());
+        }
+        
         localStorage.removeItem('ipsms_user');
         localStorage.removeItem('ipsms_session_expiry');
         localStorage.removeItem('ipsms_login_time');
@@ -361,6 +369,396 @@ function clearUserSession() {
         console.log('User session cleared from localStorage');
     } catch (error) {
         console.error('Error clearing user session:', error);
+    }
+}
+
+// Track user login for admin dashboard
+function trackUserLogin(user, loginTime) {
+    try {
+        // Get existing user activity log
+        let userActivityLog = JSON.parse(localStorage.getItem('ipsms_user_activity_log') || '[]');
+        
+        // Create login entry
+        const loginEntry = {
+            id: generateId(),
+            userId: user.id || user.username,
+            username: user.username,
+            fullName: user.full_name,
+            email: user.email,
+            userType: user.user_type,
+            loginTime: loginTime,
+            logoutTime: null,
+            isActive: true,
+            sessionDuration: null,
+            environment: window.location.origin,
+            userAgent: navigator.userAgent.substring(0, 200)
+        };
+        
+        // Mark any previous sessions for this user as inactive
+        userActivityLog.forEach(entry => {
+            if (entry.userId === user.id || entry.username === user.username) {
+                if (entry.isActive) {
+                    entry.isActive = false;
+                    entry.logoutTime = loginTime;
+                    entry.sessionDuration = loginTime - entry.loginTime;
+                }
+            }
+        });
+        
+        // Add new login entry
+        userActivityLog.push(loginEntry);
+        
+        // Keep only last 100 entries to prevent storage overflow
+        if (userActivityLog.length > 100) {
+            userActivityLog = userActivityLog.slice(-100);
+        }
+        
+        // Save updated log
+        localStorage.setItem('ipsms_user_activity_log', JSON.stringify(userActivityLog));
+        
+        console.log('User login tracked for admin dashboard:', user.full_name);
+        
+    } catch (error) {
+        console.error('Error tracking user login:', error);
+    }
+}
+
+// Track user logout for admin dashboard
+function trackUserLogout(user, logoutTime) {
+    try {
+        let userActivityLog = JSON.parse(localStorage.getItem('ipsms_user_activity_log') || '[]');
+        
+        // Find and update the user's active session
+        userActivityLog.forEach(entry => {
+            if ((entry.userId === user.id || entry.username === user.username) && entry.isActive) {
+                entry.isActive = false;
+                entry.logoutTime = logoutTime;
+                entry.sessionDuration = logoutTime - entry.loginTime;
+            }
+        });
+        
+        localStorage.setItem('ipsms_user_activity_log', JSON.stringify(userActivityLog));
+        
+        console.log('User logout tracked for admin dashboard:', user.full_name);
+        
+    } catch (error) {
+        console.error('Error tracking user logout:', error);
+    }
+}
+
+// Get user activity data for admin dashboard
+function getUserActivityData() {
+    try {
+        const userActivityLog = JSON.parse(localStorage.getItem('ipsms_user_activity_log') || '[]');
+        
+        // Update session durations for active sessions
+        const now = new Date().getTime();
+        userActivityLog.forEach(entry => {
+            if (entry.isActive) {
+                entry.currentSessionDuration = now - entry.loginTime;
+            }
+        });
+        
+        return userActivityLog;
+    } catch (error) {
+        console.error('Error getting user activity data:', error);
+        return [];
+    }
+}
+
+// Check if user is admin
+function isAdminUser(user) {
+    return user && user.user_type === 'Administrator';
+}
+
+// Load admin dashboard data
+function loadAdminDashboard() {
+    if (!isAdminUser(currentUser)) {
+        showError('Access denied. Administrator privileges required.');
+        return;
+    }
+    
+    const userActivityData = getUserActivityData();
+    displayUserActivityTable(userActivityData);
+}
+
+// Display user activity table
+function displayUserActivityTable(activityData) {
+    const container = document.getElementById('admin-user-activity');
+    
+    if (!container) {
+        console.error('Admin user activity container not found');
+        return;
+    }
+    
+    if (!activityData || activityData.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-8 text-gray-500">
+                <i class="fas fa-users text-4xl mb-4"></i>
+                <p>No user activity data available</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Sort by login time (most recent first)
+    const sortedData = activityData.sort((a, b) => b.loginTime - a.loginTime);
+    
+    // Group by user for summary
+    const userSummary = {};
+    sortedData.forEach(entry => {
+        const key = entry.userId || entry.username;
+        if (!userSummary[key]) {
+            userSummary[key] = {
+                user: entry,
+                totalSessions: 0,
+                isCurrentlyOnline: false,
+                lastLogin: 0,
+                totalTime: 0
+            };
+        }
+        
+        userSummary[key].totalSessions++;
+        if (entry.isActive) {
+            userSummary[key].isCurrentlyOnline = true;
+        }
+        if (entry.loginTime > userSummary[key].lastLogin) {
+            userSummary[key].lastLogin = entry.loginTime;
+        }
+        if (entry.sessionDuration) {
+            userSummary[key].totalTime += entry.sessionDuration;
+        }
+    });
+    
+    const now = new Date().getTime();
+    
+    container.innerHTML = `
+        <div class="bg-white rounded-lg shadow-lg">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold text-gray-900">
+                        <i class="fas fa-users-cog mr-2"></i>User Activity Dashboard
+                    </h3>
+                    <div class="flex space-x-2">
+                        <button onclick="refreshUserActivity()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-sync-alt mr-2"></i>Refresh
+                        </button>
+                        <button onclick="exportUserActivity()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                            <i class="fas fa-download mr-2"></i>Export
+                        </button>
+                        <button onclick="clearUserActivityLog()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                            <i class="fas fa-trash mr-2"></i>Clear Log
+                        </button>
+                    </div>
+                </div>
+                <div class="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <div class="text-2xl font-bold text-blue-600">${Object.keys(userSummary).length}</div>
+                        <div class="text-sm text-gray-600">Total Users</div>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <div class="text-2xl font-bold text-green-600">${Object.values(userSummary).filter(u => u.isCurrentlyOnline).length}</div>
+                        <div class="text-sm text-gray-600">Currently Online</div>
+                    </div>
+                    <div class="bg-yellow-50 p-4 rounded-lg">
+                        <div class="text-2xl font-bold text-yellow-600">${sortedData.length}</div>
+                        <div class="text-sm text-gray-600">Total Sessions</div>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-lg">
+                        <div class="text-2xl font-bold text-purple-600">${sortedData.filter(s => s.loginTime > now - (24 * 60 * 60 * 1000)).length}</div>
+                        <div class="text-sm text-gray-600">Last 24 Hours</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-6">
+                <div class="mb-6">
+                    <h4 class="text-lg font-semibold mb-4">User Summary</h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full border-collapse">
+                            <thead>
+                                <tr class="border-b">
+                                    <th class="text-left p-3">User</th>
+                                    <th class="text-left p-3">Type</th>
+                                    <th class="text-left p-3">Status</th>
+                                    <th class="text-left p-3">Last Login</th>
+                                    <th class="text-left p-3">Total Sessions</th>
+                                    <th class="text-left p-3">Total Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${Object.values(userSummary).map(summary => `
+                                    <tr class="border-b hover:bg-gray-50">
+                                        <td class="p-3">
+                                            <div>
+                                                <div class="font-medium">${summary.user.fullName}</div>
+                                                <div class="text-sm text-gray-500">${summary.user.email}</div>
+                                            </div>
+                                        </td>
+                                        <td class="p-3">
+                                            <span class="px-2 py-1 text-xs rounded-full ${
+                                                summary.user.userType === 'Administrator' ? 'bg-red-100 text-red-800' :
+                                                summary.user.userType === 'Researcher' ? 'bg-blue-100 text-blue-800' :
+                                                summary.user.userType === 'Government Official' ? 'bg-green-100 text-green-800' :
+                                                'bg-gray-100 text-gray-800'
+                                            }">
+                                                ${summary.user.userType}
+                                            </span>
+                                        </td>
+                                        <td class="p-3">
+                                            <span class="flex items-center">
+                                                <span class="w-2 h-2 rounded-full mr-2 ${
+                                                    summary.isCurrentlyOnline ? 'bg-green-500' : 'bg-gray-400'
+                                                }"></span>
+                                                ${summary.isCurrentlyOnline ? 'Online' : 'Offline'}
+                                            </span>
+                                        </td>
+                                        <td class="p-3">
+                                            <div class="text-sm">
+                                                ${new Date(summary.lastLogin).toLocaleString()}
+                                            </div>
+                                        </td>
+                                        <td class="p-3">${summary.totalSessions}</td>
+                                        <td class="p-3">${formatDuration(summary.totalTime)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Recent Activity Log</h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full border-collapse">
+                            <thead>
+                                <tr class="border-b">
+                                    <th class="text-left p-3">User</th>
+                                    <th class="text-left p-3">Login Time</th>
+                                    <th class="text-left p-3">Logout Time</th>
+                                    <th class="text-left p-3">Duration</th>
+                                    <th class="text-left p-3">Status</th>
+                                    <th class="text-left p-3">Environment</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${sortedData.slice(0, 50).map(entry => {
+                                    const duration = entry.isActive ? 
+                                        (now - entry.loginTime) : 
+                                        (entry.sessionDuration || 0);
+                                    
+                                    return `
+                                        <tr class="border-b hover:bg-gray-50 ${
+                                            entry.isActive ? 'bg-green-50' : ''
+                                        }">
+                                            <td class="p-3">
+                                                <div>
+                                                    <div class="font-medium">${entry.fullName}</div>
+                                                    <div class="text-sm text-gray-500">${entry.username}</div>
+                                                </div>
+                                            </td>
+                                            <td class="p-3 text-sm">
+                                                ${new Date(entry.loginTime).toLocaleString()}
+                                            </td>
+                                            <td class="p-3 text-sm">
+                                                ${entry.logoutTime ? new Date(entry.logoutTime).toLocaleString() : '-'}
+                                            </td>
+                                            <td class="p-3 text-sm">
+                                                ${formatDuration(duration)}
+                                            </td>
+                                            <td class="p-3">
+                                                <span class="px-2 py-1 text-xs rounded-full ${
+                                                    entry.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                                                }">
+                                                    ${entry.isActive ? 'Active' : 'Ended'}
+                                                </span>
+                                            </td>
+                                            <td class="p-3 text-sm text-gray-500">
+                                                ${entry.environment ? new URL(entry.environment).hostname : 'Unknown'}
+                                            </td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Format duration in milliseconds to human readable
+function formatDuration(ms) {
+    if (!ms || ms < 0) return '0m';
+    
+    const hours = Math.floor(ms / (1000 * 60 * 60));
+    const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((ms % (1000 * 60)) / 1000);
+    
+    if (hours > 0) {
+        return `${hours}h ${minutes}m`;
+    } else if (minutes > 0) {
+        return `${minutes}m ${seconds}s`;
+    } else {
+        return `${seconds}s`;
+    }
+}
+
+// Refresh user activity display
+function refreshUserActivity() {
+    loadAdminDashboard();
+    showSuccess('User activity data refreshed');
+}
+
+// Export user activity data
+function exportUserActivity() {
+    try {
+        const activityData = getUserActivityData();
+        const exportData = {
+            exported_at: new Date().toISOString(),
+            exported_by: currentUser.full_name,
+            total_users: new Set(activityData.map(a => a.userId)).size,
+            total_sessions: activityData.length,
+            data: activityData
+        };
+        
+        const jsonData = JSON.stringify(exportData, null, 2);
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `user_activity_export_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showSuccess('User activity data exported successfully!');
+        
+    } catch (error) {
+        console.error('Error exporting user activity:', error);
+        showError('Failed to export user activity data');
+    }
+}
+
+// Clear user activity log (admin only)
+function clearUserActivityLog() {
+    if (!isAdminUser(currentUser)) {
+        showError('Access denied. Administrator privileges required.');
+        return;
+    }
+    
+    if (confirm('Are you sure you want to clear all user activity logs? This action cannot be undone.')) {
+        try {
+            localStorage.removeItem('ipsms_user_activity_log');
+            loadAdminDashboard();
+            showSuccess('User activity log cleared successfully');
+        } catch (error) {
+            console.error('Error clearing user activity log:', error);
+            showError('Failed to clear user activity log');
+        }
     }
 }
 
@@ -719,6 +1117,23 @@ async function loadSectionData(sectionName) {
                 }
                 
                 await loadReportsManagement();
+                break;
+            case 'admin':
+                // Check admin permissions before loading admin dashboard
+                if (!currentUser) {
+                    showError('Please log in to access the admin dashboard.');
+                    showLogin();
+                    showSection('dashboard');
+                    return;
+                }
+                
+                if (!isAdminUser(currentUser)) {
+                    showError('Access denied. Administrator privileges required.');
+                    showSection('dashboard');
+                    return;
+                }
+                
+                await loadAdminDashboard();
                 break;
             case 'analytics':
                 if (typeof loadAnalyticsData === 'function') {
@@ -1143,6 +1558,7 @@ function canVerifyReports(user) {
 // Update verification permissions throughout the UI
 function updateVerificationPermissions(user) {
     const hasPermission = canVerifyReports(user);
+    const isAdmin = isAdminUser(user);
     
     // Update dashboard verify buttons
     const verifyButtons = document.querySelectorAll('button[onclick^="showVerificationModal"]');
@@ -1159,6 +1575,20 @@ function updateVerificationPermissions(user) {
     const reportsManagementLinks = document.querySelectorAll('a[data-section="reports-management"]');
     reportsManagementLinks.forEach(link => {
         if (hasPermission) {
+            link.style.display = 'block';
+            // For inline navigation links, use inline-flex
+            if (link.closest('.hidden.md\\:flex')) {
+                link.style.display = 'inline-flex';
+            }
+        } else {
+            link.style.display = 'none';
+        }
+    });
+    
+    // Update admin dashboard access
+    const adminLinks = document.querySelectorAll('a[data-section="admin"]');
+    adminLinks.forEach(link => {
+        if (isAdmin) {
             link.style.display = 'block';
             // For inline navigation links, use inline-flex
             if (link.closest('.hidden.md\\:flex')) {
